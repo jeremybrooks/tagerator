@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFAllowMixedLocalizations</key>
+	<string>true</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>JavaApplicationStub</string>
+	<key>CFBundleIconFile</key>
+	<string>Tagerator.icns</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Tagerator</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>1.0.0</string>
+	<key>Java</key>
+	<dict>
+		<key>ClassPath</key>
+		<array>
+			<string>$JAVAROOT/Tagerator.jar</string>
+			<string>$JAVAROOT/log4j-1.2.15.jar</string>
+			<string>$JAVAROOT/AbsoluteLayout.jar</string>
+			<string>$JAVAROOT/jinx.jar</string>
+			<string>$JAVAROOT/swing-layout-1.0.4.jar</string>
+                        <string>$JAVAROOT/WhirljackCommon.jar</string>
+                        <string>$JAVAROOT/swinglabs-0.8.0.jar</string>
+                        <string>$JAVAROOT/core.jar</string>
+                        <string>$JAVAROOT/WordCram.jar</string>
+		</array>
+		<key>JVMVersion</key>
+		<string>1.6+</string>
+		<key>MainClass</key>
+		<string>net.jeremybrooks.tagerator.Main</string>
+		<key>Properties</key>
+		<dict>
+			<key>com.apple.mrj.application.apple.menu.about.name</key>
+			<string>Tagerator</string>
+                        <key>apple.laf.useScreenMenuBar</key>
+                        <string>true</string>
+		</dict>
+                <key>SplashFile</key>
+                <string>$JAVAROOT/Splash.png</string>
+                <key>VMOptions</key>
+                <array>
+                    <string>-Xms64m</string>
+                    <string>-Xmx512m</string>
+                </array>
+	</dict>
+        
+</dict>
+</plist>

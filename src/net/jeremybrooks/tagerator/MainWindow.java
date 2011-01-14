@@ -645,12 +645,14 @@ public class MainWindow extends javax.swing.JFrame {
 
 	    if (FlickrHelper.getInstance().authorize()) {
 		logger.info("Authentication OK");
-		this.setTitle("Tagerator :: " + FlickrHelper.getInstance().getUsername());
 		this.btnAuthorize.setVisible(false);
 	    } else {
 		this.btnAuthorize.setVisible(true);
 	    }
-	}	
+	}
+	
+	this.setTitle("Tagerator :: " + FlickrHelper.getInstance().getUsername());
+	
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

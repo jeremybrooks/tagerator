@@ -1,6 +1,0 @@
-KNOWN ISSUES:
- * Using some fonts for the tag cloud will result in OutOfMemoryErrors. If this
-   happens, just select a different font.
-
-Version 1.0.0, January 13, 2011
- * Initial release.

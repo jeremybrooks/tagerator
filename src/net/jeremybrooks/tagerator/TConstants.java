@@ -23,7 +23,7 @@ package net.jeremybrooks.tagerator;
  * 
  * @author jeremyb
  */
-class TConstants {
+public class TConstants {
 
     private TConstants() {}
 
@@ -39,4 +39,8 @@ class TConstants {
 
     public static final String CHECK_FOR_UPDATES = "CHECK_FOR_UPDATES";
     public static final String VERSION_URL="http://jeremybrooks.net/tagerator/VERSION";
+
+    public static final String TAG_CACHE_FILENAME = "tagcache.txt";
+
+    public static final String COLOR_SCHEME_FILENAME = "colorscheme.txt";
 }

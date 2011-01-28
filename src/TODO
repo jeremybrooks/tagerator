@@ -1,1 +1,4 @@
 Add options for changing the color used for words in the tag cloud.
+Cache tags in a CSV file after each run
+Use cached tags to display the table at startup
+Add compress logs menu option

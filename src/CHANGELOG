@@ -2,5 +2,12 @@ KNOWN ISSUES:
  * Using some fonts for the tag cloud will result in OutOfMemoryErrors. If this
    happens, just select a different font.
 
+Version 1.1.0, January 27, 2011
+ * Select a color scheme for tag clouds.
+ * Users can define their own color schemes by editing the
+   ~/.tagerator/colorschemes.txt file.
+ * Tags and counts are cached after each run.
+ * Results of the most recent run are shown at startup.
+
 Version 1.0.0, January 13, 2011
  * Initial release.

@@ -18,15 +18,25 @@
  */
 package net.jeremybrooks.tagerator;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.StringTokenizer;
 import javax.swing.JOptionPane;
 import net.jeremybrooks.tagerator.helpers.BrowserLauncher;
 import net.jeremybrooks.tagerator.helpers.FlickrHelper;
 import net.jeremybrooks.tagerator.workers.TagCollectorWorker;
+import net.whirljack.common.util.IOUtil;
 import net.whirljack.common.util.NetUtil;
 import org.apache.log4j.Logger;
 import processing.core.PFont;
+
 
 /**
  * The main window.
@@ -41,10 +51,16 @@ public class MainWindow extends javax.swing.JFrame {
     private Logger logger = Logger.getLogger(MainWindow.class);
     private static MainWindow mainWindow;
 
+    private Map<String, List<int[]>> colorScheme;
+
     /** Creates new form MainWindow */
     public MainWindow() {
 	mainWindow = this;
+
+	initColorScheme();
+
         initComponents();
+	this.cmbColor.setSelectedItem("Random");
 	this.btnAuthorize.setVisible(false);
 	
 	this.btnUpdate.setVisible(false);
@@ -108,9 +124,11 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
         slideWiggle = new javax.swing.JSlider();
         slideBackground = new javax.swing.JSlider();
+        cmbColor = new javax.swing.JComboBox();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtStopWords = new javax.swing.JTextArea();
         jLabel13 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         cbxUpdates = new javax.swing.JCheckBox();
         jPanel4 = new javax.swing.JPanel();
@@ -209,7 +227,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .add(lblTotal)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(lblLastCount)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 41, Short.MAX_VALUE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED, 81, Short.MAX_VALUE)
                 .add(btnStart))
         );
 
@@ -283,6 +301,8 @@ public class MainWindow extends javax.swing.JFrame {
         slideBackground.setToolTipText("Background color, black to white.");
         slideBackground.setValue(255);
 
+        cmbColor.setModel(new javax.swing.DefaultComboBoxModel(colorScheme.keySet().toArray()));
+
         txtStopWords.setColumns(20);
         txtStopWords.setLineWrap(true);
         txtStopWords.setRows(5);
@@ -293,6 +313,8 @@ public class MainWindow extends javax.swing.JFrame {
 
         jLabel13.setText("Background");
 
+        jLabel1.setText("Colors");
+
         org.jdesktop.layout.GroupLayout jPanel2Layout = new org.jdesktop.layout.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -300,9 +322,6 @@ public class MainWindow extends javax.swing.JFrame {
             .add(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(jLabel9)
-                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 526, Short.MAX_VALUE)
-                    .add(org.jdesktop.layout.GroupLayout.TRAILING, btnTagCloud)
                     .add(jPanel2Layout.createSequentialGroup()
                         .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
                             .add(jLabel13)
@@ -310,9 +329,11 @@ public class MainWindow extends javax.swing.JFrame {
                             .add(jLabel10)
                             .add(jLabel5)
                             .add(jLabel7)
-                            .add(jLabel8))
+                            .add(jLabel8)
+                            .add(jLabel1))
                         .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                         .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
+                            .add(cmbColor, 0, 424, Short.MAX_VALUE)
                             .add(org.jdesktop.layout.GroupLayout.TRAILING, slideBackground, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
                             .add(jPanel2Layout.createSequentialGroup()
                                 .add(cmbX, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
@@ -332,7 +353,10 @@ public class MainWindow extends javax.swing.JFrame {
                                 .add(cbxUppercase))
                             .add(slideWiggle, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
                             .add(cmbPlacer, 0, 424, Short.MAX_VALUE)
-                            .add(cmbFont, 0, 424, Short.MAX_VALUE))))
+                            .add(cmbFont, 0, 424, Short.MAX_VALUE)))
+                    .add(jLabel9)
+                    .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 526, Short.MAX_VALUE)
+                    .add(org.jdesktop.layout.GroupLayout.TRAILING, btnTagCloud))
                 .add(72, 72, 72))
         );
         jPanel2Layout.setVerticalGroup(
@@ -369,12 +393,17 @@ public class MainWindow extends javax.swing.JFrame {
                 .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
                     .add(slideBackground, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                     .add(jLabel13))
-                .add(20, 20, 20)
+                .add(17, 17, 17)
+                .add(jPanel2Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.BASELINE)
+                    .add(jLabel1)
+                    .add(cmbColor, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jLabel9)
                 .add(5, 5, 5)
                 .add(jScrollPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
-                .add(btnTagCloud))
+                .add(btnTagCloud)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("Tag Cloud", jPanel2);
@@ -495,7 +524,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .add(cbxUpdates)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.UNRELATED)
                 .add(jPanel4, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(103, Short.MAX_VALUE))
+                .addContainerGap(143, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Settings", jPanel3);
@@ -511,8 +540,8 @@ public class MainWindow extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
             .add(layout.createSequentialGroup()
-                .add(jTabbedPane1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 435, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .add(jTabbedPane1)
+                .addContainerGap())
         );
 
         jTabbedPane1.getAccessibleContext().setAccessibleName("Tag Cloud");
@@ -666,12 +695,14 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JCheckBox cbxProxy;
     private javax.swing.JCheckBox cbxUpdates;
     private javax.swing.JCheckBox cbxUppercase;
+    private javax.swing.JComboBox cmbColor;
     private javax.swing.JComboBox cmbFont;
     private javax.swing.JComboBox cmbMaxWeight;
     private javax.swing.JComboBox cmbMinWeight;
     private javax.swing.JComboBox cmbPlacer;
     private javax.swing.JComboBox cmbX;
     private javax.swing.JComboBox cmbY;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -770,11 +801,15 @@ public class MainWindow extends javax.swing.JFrame {
     public boolean isUppercase() {
 	return this.cbxUppercase.isSelected();
     }
+    public List<int[]> getSelectedColorArray() {
+	String key = this.cmbColor.getSelectedItem().toString();
+	return this.colorScheme.get(key);
+    }
 
     /**
      * Enable/disable the tag cloud UI controls.
      */
-    private void enableTagCloud() {
+    public void enableTagCloud() {
 	boolean enable = Main.tagCloudFile.exists() && Main.tagCloudFile.length() > 0;
 
 	this.cmbFont.setEnabled(enable);
@@ -800,5 +835,68 @@ public class MainWindow extends javax.swing.JFrame {
 	this.txtProxyPass.setEnabled(enable);
 	this.txtProxyPort.setEnabled(enable);
 	this.txtProxyUser.setEnabled(enable);
+    }
+
+
+    /**
+     * Read the colorscheme.txt file in the tagerator config directory,
+     * adding color schemes as needed.
+     *
+     * The file format is:
+     * # comments begin with a hash
+     * Scheme Name=0,1,2; 3,4,5
+     *
+     * There can be multiple numbers defining each color.
+     */
+    private void initColorScheme() {
+	BufferedReader in = null;
+	String line = null;
+	List<Integer> intList = new ArrayList<Integer>();
+
+	this.colorScheme = new HashMap<String, List<int[]>>();
+
+	// add random, this will be used if there are no user choices defined
+	colorScheme.put("Random", null);
+
+	// parse the config file
+	try {
+	    in = new BufferedReader(new FileReader(new File(Main.configDir, TConstants.COLOR_SCHEME_FILENAME)));
+	    while ((line = in.readLine()) != null) {
+		if (!line.startsWith("#") && !line.trim().isEmpty()) {
+
+		    List<int[]> intArrayList = new ArrayList<int[]>();
+
+		    line = line.trim();
+		    int pos = line.indexOf("=");
+		    String name = line.substring(0, pos);
+		    String colors = line.substring(pos + 1);
+
+		    // now figure out the colors
+		    StringTokenizer tok = new StringTokenizer(colors, ";");
+		    while (tok.hasMoreTokens()) {
+			intList.clear();
+			String nums = tok.nextToken();
+			StringTokenizer tok2 = new StringTokenizer(nums, ",");
+			while (tok2.hasMoreTokens()) {
+			    intList.add(Integer.decode(tok2.nextToken().trim()));
+			}
+			// add to the list
+			int[] ints = new int[intList.size()];
+			int i = 0;
+			for (Integer x : intList) {
+			    ints[i] = x;
+			    i++;
+			}
+			intArrayList.add(ints);
+		    }
+
+		    colorScheme.put(name, intArrayList);
+		}
+	    }
+	} catch (Exception e) {
+	    logger.warn("Could not read colorscheme.txt", e);
+	} finally {
+	    IOUtil.close(in);
+	}
     }
 }

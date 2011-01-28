@@ -176,4 +176,9 @@ public class ResultsWindow {
 	}
     }
 
+
+    public void setTitle(String title) {
+	this.frame.setTitle(title);
+    }
+
 }

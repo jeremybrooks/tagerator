@@ -20,6 +20,8 @@ package net.jeremybrooks.tagerator;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -176,7 +178,7 @@ public class CloudFrame extends javax.swing.JFrame {
 
 	WordCram wordCram;
 
-
+	
 	/**
 	 * Set up the sketch.
 	 */
@@ -184,7 +186,7 @@ public class CloudFrame extends javax.swing.JFrame {
 	public void setup() {
 	    size(MainWindow.getMainWindow().getCanvasX(), MainWindow.getMainWindow().getCanvasY());
 	    background(MainWindow.getMainWindow().getBackgroundSlider());
-	    colorMode(HSB);
+	    colorMode(RGB);
 	    initWordCram();
 	}
 
@@ -199,6 +201,7 @@ public class CloudFrame extends javax.swing.JFrame {
 	    String file = Main.tagCloudFile.getAbsolutePath();
 	    Word[] tags = new TextSplitter().split(loadStrings(file));
 	    WordPlacer placer;
+	    List<int[]> colorList;
 
 	    /*
 	    Center Clump
@@ -249,6 +252,42 @@ public class CloudFrame extends javax.swing.JFrame {
 	    if (wiggle > 0) {
 		wordCram.angledBetween(-wiggle, wiggle);
 		logger.info("Gettin wiggly!");
+	    }
+
+	    // colors
+	    colorList = MainWindow.getMainWindow().getSelectedColorArray();
+	    if (colorList != null) {
+		// color list is a list of int[]
+		// each int[] in the list must be converted to a
+		// color() value, which is an int.
+		// the resulting color values go into a new int[]
+		// which is passed to wordCram.withColors
+
+		int[] colorArray = new int[colorList.size()];
+		int i = 0;
+		for (int[] arr : colorList) {
+		    logger.debug("Color definition: " + Arrays.toString(arr));
+		    
+		    switch (arr.length) {
+			case 1:
+			    colorArray[i] = color(arr[0]);
+			    break;
+			case 2:
+			    colorArray[i] = color(arr[0], arr[1]);
+			    break;
+			case 3:
+			    colorArray[i] = color(arr[0], arr[1], arr[2]);
+			    break;
+			case 4:
+			    colorArray[i] = color(arr[0], arr[1], arr[2], arr[3]);
+			    break;
+			default:
+			    colorArray[i] = color(0, 0, 0);
+		    }
+		    i++;
+		}
+
+		wordCram.withColors(colorArray);
 	    }
 	}
 

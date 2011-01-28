@@ -19,7 +19,9 @@
 package net.jeremybrooks.tagerator.workers;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFrame;
@@ -35,6 +37,7 @@ import net.jeremybrooks.tagerator.Main;
 import net.jeremybrooks.tagerator.MainWindow;
 import net.jeremybrooks.tagerator.ResultsWindow;
 import net.jeremybrooks.tagerator.TagCount;
+import net.jeremybrooks.tagerator.TConstants;
 import net.jeremybrooks.tagerator.helpers.FlickrHelper;
 import net.whirljack.common.util.IOUtil;
 import org.apache.log4j.Logger;
@@ -138,6 +141,11 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
 		map.values().toArray(new TagCount[size]),
 		parent.getX() + 100, parent.getY() + 100);
 	MainWindow.setTotal(size);
+
+	results.setTitle(Main.getPropertyStore().getProperty(TConstants.LAST_DATE));
+
+	new Thread(new WriteTagCache()).start();
+	
 	blocker.unBlock();
     }
 
@@ -174,4 +182,31 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
 	}
     }
 
+
+    class WriteTagCache implements Runnable {
+
+
+	/**
+	 * Save the tags in a file.
+	 */
+	public void run() {
+	    BufferedWriter out = null;
+	    File f = new File(Main.configDir, TConstants.TAG_CACHE_FILENAME);
+
+	    try {
+		out = new BufferedWriter(new FileWriter(f));
+		for(TagCount tc : map.values()) {
+		    out.write(tc.getTag());
+		    out.write(",");
+		    out.write(Integer.toString(tc.getCount()));
+		    out.newLine();
+		    out.flush();
+		}
+	    } catch (Exception e) {
+		logger.warn("Could not save tag cache.", e);
+	    } finally {
+		IOUtil.close(out);
+	    }
+	}
+    }
 }

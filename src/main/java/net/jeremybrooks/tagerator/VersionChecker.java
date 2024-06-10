@@ -29,8 +29,8 @@ import java.net.HttpURLConnection;
 
 // LOGGING
 import net.whirljack.common.util.IOUtil;
-import org.apache.log4j.Logger;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
 public class VersionChecker implements Runnable {
 
     /** Logging. */
-    private Logger logger = Logger.getLogger(VersionChecker.class);
+    private Logger logger = LogManager.getLogger();
 
 
 

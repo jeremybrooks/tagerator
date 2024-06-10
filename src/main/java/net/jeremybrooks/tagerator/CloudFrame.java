@@ -26,7 +26,9 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.apache.log4j.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import processing.core.PApplet;
 import processing.core.PConstants;
 import wordcram.Placers;
@@ -45,7 +47,7 @@ import wordcram.text.TextSplitter;
  */
 public class CloudFrame extends javax.swing.JFrame {
 
-    private Logger logger = Logger.getLogger(CloudFrame.class);
+    private Logger logger = LogManager.getLogger();
 
     private PApplet sketch;
 

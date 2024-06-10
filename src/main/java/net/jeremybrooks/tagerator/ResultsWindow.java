@@ -30,9 +30,10 @@ import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
 import net.jeremybrooks.tagerator.helpers.BrowserLauncher;
 import net.jeremybrooks.tagerator.helpers.FlickrHelper;
-import org.apache.log4j.Logger;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.AlternateRowHighlighter;
 import org.jdesktop.swingx.decorator.HighlighterPipeline;
@@ -45,7 +46,7 @@ import org.jdesktop.swingx.decorator.HighlighterPipeline;
  */
 public class ResultsWindow {
 
-    private Logger logger = Logger.getLogger(ResultsWindow.class);
+    private Logger logger = LogManager.getLogger();
 
     private static TagCount[] data;
 

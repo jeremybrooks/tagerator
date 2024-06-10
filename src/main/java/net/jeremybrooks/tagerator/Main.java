@@ -28,8 +28,8 @@ import net.jeremybrooks.jinx.Jinx;
 import net.whirljack.common.PropertyStore;
 import net.whirljack.common.util.IOUtil;
 import net.whirljack.common.util.NetUtil;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -44,7 +44,7 @@ public class Main {
 
     public static File tagCloudFile;
 
-    private static Logger logger = Logger.getLogger(Main.class);
+    private static Logger logger = LogManager.getLogger();
 
     private static final String FLICKR_KEY = "8f47e79509c0ad500433d3dba1d0e53f";
 

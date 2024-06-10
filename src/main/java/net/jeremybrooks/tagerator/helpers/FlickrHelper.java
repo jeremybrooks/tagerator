@@ -27,7 +27,8 @@ import net.jeremybrooks.jinx.api.AuthApi;
 import net.jeremybrooks.jinx.dto.Frob;
 import net.jeremybrooks.jinx.dto.Token;
 import net.jeremybrooks.tagerator.Main;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -46,7 +47,7 @@ public class FlickrHelper {
 
     
     /** Logging. */
-    private static Logger logger = Logger.getLogger(FlickrHelper.class);
+    private static Logger logger = LogManager.getLogger();
 
     /** Reference to the only instance of this class. */
     private static FlickrHelper instance = null;

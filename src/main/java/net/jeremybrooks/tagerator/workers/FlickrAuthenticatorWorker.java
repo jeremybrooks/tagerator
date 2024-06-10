@@ -25,7 +25,8 @@ import javax.swing.SwingWorker;
 import net.jeremybrooks.tagerator.BlockerPanel;
 import net.jeremybrooks.tagerator.helpers.BrowserLauncher;
 import net.jeremybrooks.tagerator.helpers.FlickrHelper;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -42,7 +43,7 @@ import org.apache.log4j.Logger;
 public class FlickrAuthenticatorWorker extends SwingWorker<Void, Void> {
 
     /** Logging. */
-    private Logger logger = Logger.getLogger(FlickrAuthenticatorWorker.class);
+    private Logger logger = LogManager.getLogger();
 
     /** The blocker instance. */
     private BlockerPanel blocker;

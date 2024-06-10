@@ -34,7 +34,8 @@ import net.jeremybrooks.tagerator.helpers.FlickrHelper;
 import net.jeremybrooks.tagerator.workers.TagCollectorWorker;
 import net.whirljack.common.util.IOUtil;
 import net.whirljack.common.util.NetUtil;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import processing.core.PFont;
 
 
@@ -48,7 +49,7 @@ import processing.core.PFont;
  */
 public class MainWindow extends javax.swing.JFrame {
 
-    private Logger logger = Logger.getLogger(MainWindow.class);
+    private Logger logger = LogManager.getLogger();
     private static MainWindow mainWindow;
 
     private Map<String, List<int[]>> colorScheme;

@@ -19,9 +19,9 @@
 package net.jeremybrooks.tagerator;
 
 import java.awt.Frame;
-import javax.swing.JOptionPane;
 import net.jeremybrooks.tagerator.workers.FlickrAuthenticatorWorker;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 public class LoginDialog extends javax.swing.JDialog {
 
     /** Logging */
-    private Logger logger = Logger.getLogger(LoginDialog.class);
+    private Logger logger = LogManager.getLogger();
 
 
     /** 

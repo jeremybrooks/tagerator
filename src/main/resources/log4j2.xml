@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+    <Appenders>
+        <RollingFile name="FILE"
+                     fileName="${sys:user.home}/.tagerator/tagerator.log"
+                     filePattern="tagerator-%i.log">
+            <PatternLayout pattern="%d %p %c: %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="FILE" />
+        </Root>
+    </Loggers>
+</Configuration>

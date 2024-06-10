@@ -19,10 +19,10 @@
 
 package net.jeremybrooks.tagerator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import net.whirljack.common.util.IOUtil;
-import org.apache.log4j.Logger;
 
 
 /**
@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 public class AboutDialog extends javax.swing.JDialog {
 
     /** Logging */
-    private Logger logger = Logger.getLogger(AboutDialog.class);
+    private Logger logger = LogManager.getLogger();
 
 
     /** Creates new form AboutDialog */

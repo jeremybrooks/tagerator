@@ -1,0 +1,210 @@
+<!--
+  ~  Tagerator is Copyright TODO by Jeremy Brooks
+  ~
+  ~  This file is part of Tagerator.
+  ~
+  ~  Tagerator is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  Tagerator is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with Tagerator.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.jeremybrooks</groupId>
+    <artifactId>tagerator</artifactId>
+    <version>1.0.1-SNAPSHOT</version>
+    <name>Tagerator</name>
+		<description>TODO</description>
+    <url>https://jeremybrooks.net/tagerator</url>
+    <inceptionYear>TODO</inceptionYear>
+    <licenses>
+        <license>
+            <name>GNU General Public License</name>
+            <url>https://www.gnu.org/licenses/</url>
+        </license>
+    </licenses>
+    <organization>
+        <name>Jeremy Brooks</name>
+        <url>https://jeremybrooks.net</url>
+    </organization>
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <!-- library versions -->
+        <commons-io.version>2.11.0</commons-io.version>
+        <derby.version>10.16.1.1</derby.version>
+        <jcalendar.version>1.4</jcalendar.version>
+        <jinx.version>3.0.3</jinx.version>
+        <junit.version>4.13.2</junit.version>
+        <log4j.version>2.20.0</log4j.version>
+        <twitter4j.version>4.0.7</twitter4j.version>
+
+        <!-- plugin versions -->
+        <install4j-maven-plugin.version>1.1.2</install4j-maven-plugin.version>
+        <gitflow-maven-plugin.version>1.19.0</gitflow-maven-plugin.version>
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+        <maven-deploy-plugin.version>3.1.0</maven-deploy-plugin.version>
+        <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
+        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+        <maven-release-plugin.version>3.0.0-M7</maven-release-plugin.version>
+    </properties>
+    <scm>
+        <connection>scm:git:git@github.com:jeremybrooks/tagerator.git</connection>
+        <developerConnection>scm:git:git@github.com:jeremybrooks/tagerator.git</developerConnection>
+        <url>git@github.com:tagerator/tagerator.git</url>
+        <tag>HEAD</tag>
+    </scm>
+    <developers>
+        <developer>
+            <email>jeremymbrooks@gmail.com</email>
+            <name>Jeremy Brooks</name>
+            <url>https://jeremybrooks.net</url>
+        </developer>
+    </developers>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.jeremybrooks</groupId>
+            <artifactId>jinx</artifactId>
+            <version>${jinx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <type>jar</type>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>${project.artifactId}.install4j</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.png</include>
+                    <include>**/*.gif</include>
+                    <include>**/*.icns</include>
+                    <include>**/*.html</include>
+                    <include>log4j2.xml</include>
+                    <include>LICENSE</include>
+                    <include>CHANGELOG</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>${maven-release-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${maven-deploy-plugin.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven-javadoc-plugin.version}</version>
+                <configuration>
+                    <source>8</source>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                            <excludeArtifactIds>junit,hamcrest-core</excludeArtifactIds>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-plugin.version}</version>
+                <inherited>true</inherited>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>com.amashchenko.maven.plugin</groupId>
+                <artifactId>gitflow-maven-plugin</artifactId>
+                <version>${gitflow-maven-plugin.version}</version>
+                <configuration>
+                    <skipTestProject>true</skipTestProject>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.install4j</groupId>
+                <artifactId>install4j-maven-plugin</artifactId>
+                <version>${install4j-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile-installers</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <projectFile>${project.basedir}/target/classes/${project.artifactId}.install4j</projectFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+

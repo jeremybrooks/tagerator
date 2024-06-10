@@ -24,7 +24,8 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 import net.whirljack.common.util.IOUtil;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Load the tag cache on a background thread, displaying the results window
@@ -34,7 +35,7 @@ import org.apache.log4j.Logger;
  */
 public class TagCacheLoader implements Runnable {
 
-    Logger logger = Logger.getLogger(TagCacheLoader.class);
+    Logger logger = LogManager.getLogger();
 
     public void run() {
 	File f = new File(Main.configDir, TConstants.TAG_CACHE_FILENAME);

@@ -19,7 +19,8 @@ package net.jeremybrooks.tagerator;
 
 import java.io.FileReader;
 import net.whirljack.common.util.IOUtil;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -27,7 +28,7 @@ import org.apache.log4j.Logger;
  */
 public class TagWindow extends javax.swing.JFrame {
 
-    private Logger logger = Logger.getLogger(TagWindow.class);
+    private Logger logger = LogManager.getLogger();
     
     /** Creates new form TagWindow */
     public TagWindow() {

@@ -1,4 +1,4 @@
-src/main/resources/net/jeremybrooks/suprsetr/private.properties
+src/main/resources/net/jeremybrooks/tagerator/private.properties
 
 log/*.log
 *.log

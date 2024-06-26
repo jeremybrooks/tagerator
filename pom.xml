@@ -48,6 +48,7 @@
         <derby.version>10.16.1.1</derby.version>
         <jcalendar.version>1.4</jcalendar.version>
         <jinx.version>3.0.3</jinx.version>
+        <common.version>3.0.2</common.version>
         <junit.version>4.13.2</junit.version>
         <log4j.version>2.20.0</log4j.version>
         <twitter4j.version>4.0.7</twitter4j.version>
@@ -84,6 +85,11 @@
             <groupId>net.jeremybrooks</groupId>
             <artifactId>jinx</artifactId>
             <version>${jinx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.jeremybrooks</groupId>
+            <artifactId>common</artifactId>
+            <version>${common.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>

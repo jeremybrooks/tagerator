@@ -18,12 +18,8 @@
  */
 package net.jeremybrooks.tagerator;
 
-// APPLE STUFF
-import com.apple.eawt.AboutHandler;
-import com.apple.eawt.AppEvent.AboutEvent;
-import com.apple.eawt.Application;
 
-
+import java.awt.Desktop;
 
 /**
  * Handle Mac-specific events.
@@ -32,24 +28,13 @@ import com.apple.eawt.Application;
  * @author jeremyb
  */
 public class OSXSetup {
+	public OSXSetup() {
+		Desktop.getDesktop().setAboutHandler(ae -> new AboutDialog(MainWindow.getMainWindow()).setVisible(true));
 
-    public OSXSetup() {
-	Application app = Application.getApplication();
+		Desktop.getDesktop().setQuitHandler((qe, qr) -> {
+			MainWindow.getMainWindow().confirmAndExit(qr);
+		});
 
-	app.setAboutHandler(new AboutHandler() {
-	    public void handleAbout(AboutEvent ae) {
-		new AboutDialog(null, true).setVisible(true);
-	    }
-	});
-
-	/*
-	app.setPreferencesHandler(new PreferencesHandler() {
-	    public void handlePreferences(PreferencesEvent pe) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	    }
-	});
-	 */
-    }
-
-
+		Desktop.getDesktop().setPreferencesHandler(pe -> new SettingsDialog(MainWindow.getMainWindow()).setVisible(true));
+	}
 }

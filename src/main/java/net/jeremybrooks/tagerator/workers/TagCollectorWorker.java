@@ -18,30 +18,23 @@
  */
 package net.jeremybrooks.tagerator.workers;
 
+import net.jeremybrooks.jinx.JinxConstants;
+import net.jeremybrooks.jinx.api.PhotosApi;
+import net.jeremybrooks.jinx.dto.Photo;
+import net.jeremybrooks.jinx.dto.Photos;
+import net.jeremybrooks.jinx.response.photos.SearchParameters;
+import net.jeremybrooks.tagerator.*;
+import net.jeremybrooks.tagerator.helpers.FlickrHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.swing.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
-
-import net.jeremybrooks.jinx.JinxConstants;
-import net.jeremybrooks.jinx.api.PhotosApi;
-import net.jeremybrooks.jinx.dto.Photo;
-import net.jeremybrooks.jinx.dto.Photos;
-import net.jeremybrooks.jinx.dto.SearchParameters;
-import net.jeremybrooks.tagerator.BlockerPanel;
-import net.jeremybrooks.tagerator.Main;
-import net.jeremybrooks.tagerator.MainWindow;
-import net.jeremybrooks.tagerator.ResultsWindow;
-import net.jeremybrooks.tagerator.TagCount;
-import net.jeremybrooks.tagerator.TConstants;
-import net.jeremybrooks.tagerator.helpers.FlickrHelper;
-import net.whirljack.common.util.IOUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import java.util.Set;
 
 
 /**
@@ -93,10 +86,9 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
     protected Void doInBackground() {
         blocker.block("Getting tags from photos (page 1/?) ...");
         try (BufferedWriter out = new BufferedWriter(new FileWriter(Main.tagCloudFile))) {
-
             SearchParameters search = new SearchParameters();
             search.setUserId(FlickrHelper.getInstance().getNSID());
-            search.setExtras(JinxConstants.EXTRAS_TAGS);
+            search.setExtras(Set.of(JinxConstants.PhotoExtras.tags));
             search.setPerPage(500);
 
             Photos p = PhotosApi.getInstance().search(search);

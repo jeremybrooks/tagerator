@@ -19,16 +19,23 @@
 package net.jeremybrooks.tagerator.helpers;
 
 
-import java.io.File;
-import java.net.URL;
+import com.github.scribejava.core.model.OAuth1RequestToken;
 import net.jeremybrooks.jinx.Jinx;
 import net.jeremybrooks.jinx.JinxConstants;
-import net.jeremybrooks.jinx.api.AuthApi;
-import net.jeremybrooks.jinx.dto.Frob;
-import net.jeremybrooks.jinx.dto.Token;
+import net.jeremybrooks.jinx.OAuthAccessToken;
 import net.jeremybrooks.tagerator.Main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URL;
+import java.util.Properties;
 
 
 /**
@@ -37,54 +44,56 @@ import org.apache.logging.log4j.Logger;
  * <p>This wrapper provides access to the authentication methods, the API
  * interfaces, and metadata about the user.</p>
  *
- * <p>This class is implemented as a Singleton. Calling <code>FlickrHelper.getInstance()</code>
+ * <p>This class is implemented as a Singleton. Calling {@code FlickrHelper.getInstance()}
  * will return a reference to the instance of this class. The initialize
  * method must be called once before other methods are called.</p>
  *
- * @author jeremyb
+ * @author Jeremy Brooks
  */
 public class FlickrHelper {
-
-    
-    /** Logging. */
-    private static Logger logger = LogManager.getLogger();
-
-    /** Reference to the only instance of this class. */
+    private static final Logger logger = LogManager.getLogger(FlickrHelper.class);
     private static FlickrHelper instance = null;
 
-    /** File that holds auth token info. */
-    private File tokenFile = null;
+    private final Jinx jinx;
 
-    /** The frob. */
-    private Frob frob = null;
+    /* File that holds oauth token info. */
+    private final File oauthTokenFile;
 
-    /** The auth token object. */
-    private Token token = null;
+    private OAuthAccessToken oAuthAccessToken = null;
 
+    private OAuth1RequestToken tempToken = null;
 
-    /**
-     * Private constructor. This class is a Singleton.
-     */
-    private FlickrHelper() {
-	this.tokenFile = new File(Main.configDir, "jinx.token");
+    /* Private constructor. This class is a Singleton. */
+    private FlickrHelper() throws RuntimeException {
+        this.oauthTokenFile = new File(Main.configDir, "jinx_oauth.token");
+        Properties secrets = new Properties();
+        try {
+            secrets.load(FlickrHelper.class.getClassLoader().getResourceAsStream("net/jeremybrooks/tagerator/private.properties"));
+        } catch (IOException ioe) {
+            throw new RuntimeException("Unable to load secrets from class path.", ioe);
+        }
+        jinx = new Jinx(secrets.getProperty("FLICKR_KEY"),
+                secrets.getProperty("FLICKR_SECRETS"), JinxConstants.OAuthPermissions.read);
     }
-
 
 
     /**
      * Get a reference to the only instance of this class.
      *
+     * <p>The first time this method is called, an instance of this class will be created
+     * and initialized. If that initialization fails, a RuntimeException will be thrown.
+     * Normally this will happen during application startup, so the first time this method
+     * is called, the caller should check for RuntimeException and notify the user of the
+     * failure.</p>
+     *
      * @return reference to FlickrHelper instance.
      */
-    public static FlickrHelper getInstance() {
-	if (instance == null) {
-	    instance = new FlickrHelper();
-
-	}
-
-	return instance;
+    public static FlickrHelper getInstance() throws RuntimeException {
+        if (instance == null) {
+            instance = new FlickrHelper();
+        }
+        return instance;
     }
-
 
     /**
      * Authorize the user.
@@ -95,22 +104,20 @@ public class FlickrHelper {
      * @return true if user is authorized.
      */
     public boolean authorize() {
-	boolean success = false;
+        boolean success = false;
+        // try loading oauth token
+        if (this.oauthTokenFile.exists()) {
+            logger.info("Loading oauth token from " + this.oauthTokenFile.getAbsolutePath());
+            oAuthAccessToken = new OAuthAccessToken();
+            try (InputStream in = new FileInputStream(oauthTokenFile)) {
+                oAuthAccessToken.load(in);
+                success = true;
+            } catch (Exception e) {
+                logger.warn("Unable to load oauth access token from file.", e);
+            }
+        }
 
-	// first, try loading the jinx auth token
-	if (this.tokenFile.exists()) {
-	    this.token = new Token();
-	    try {
-		this.token.load(this.tokenFile);
-		Jinx.getInstance().setToken(this.token);
-
-	    } catch (Exception ex) {
-		logger.warn("Unable to load auth token from file.", ex);
-	    }
-	    success = true;
-	}
-
-	return success;
+        return success;
     }
 
 
@@ -120,13 +127,7 @@ public class FlickrHelper {
      * @return username of the currently authorized user.
      */
     public String getUsername() {
-	String username = null;
-	try {
-	    username = this.token.getUsername();
-	} catch (Exception e) {
-	    // ignore; will return null
-	}
-	return username;
+        return this.oAuthAccessToken == null ? null : this.oAuthAccessToken.getUsername();
     }
 
 
@@ -136,13 +137,7 @@ public class FlickrHelper {
      * @return NSID of the currently authorized user.
      */
     public String getNSID() {
-	String nsid = null;
-	try {
-	    nsid = this.token.getNsid();
-	} catch (Exception e) {
-	    // ignore; will return null
-	}
-	return nsid;
+        return this.oAuthAccessToken == null ? null : this.oAuthAccessToken.getNsid();
     }
 
 
@@ -153,23 +148,22 @@ public class FlickrHelper {
      * @throws Exception if there are any errors.
      */
     public URL getAuthenticationURL() throws Exception {
-	this.frob = AuthApi.getInstance().getFrob(JinxConstants.PERMS_READ);
-	return new URL(this.frob.getLoginUrl());
+        this.tempToken = jinx.getRequestToken();
+        return URI.create(jinx.getAuthorizationUrl(this.tempToken)).toURL();
     }
 
 
     /**
      * Complete authentication.
      *
-     * <p>This method will use the frob to get an authorization token, and then
-     * store that authorization token in the auth store.</p>
-     *
+     * @param verificationCode oauth verification code.
      * @throws Exception if there are any errors.
      */
-    public void completeAuthentication() throws Exception {
-	this.token = AuthApi.getInstance().getToken(this.frob);
-	Jinx.getInstance().setToken(this.token);
-	this.token.store(this.tokenFile);
+    public void completeAuthentication(String verificationCode) throws Exception {
+        this.oAuthAccessToken = jinx.getAccessToken(tempToken, verificationCode);
+        try (OutputStream out = new FileOutputStream(oauthTokenFile)) {
+            this.oAuthAccessToken.store(out);
+        }
     }
 
 
@@ -177,12 +171,12 @@ public class FlickrHelper {
      * Delete all stored authorization data.
      */
     public void deauthorize() {
-	if (this.tokenFile.exists()) {
-	    if (this.tokenFile.delete()) {
-		logger.info("Authorization token deleted.");
-	    } else {
-		logger.warn("Could not delete the authorization token.");
-	    }
-	}
+        if (this.oauthTokenFile.exists()) {
+            if (this.oauthTokenFile.delete()) {
+                logger.info("Oauth token deleted.");
+            } else {
+                logger.warn("Could not delete the oauth token.");
+            }
+        }
     }
 }

@@ -18,25 +18,26 @@
  */
 package net.jeremybrooks.tagerator;
 
+import net.jeremybrooks.common.util.NetUtil;
+import net.jeremybrooks.tagerator.helpers.FlickrHelper;
+import net.jeremybrooks.tagerator.workers.TagCollectorWorker;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.swing.JOptionPane;
+import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.StringTokenizer;
-import javax.swing.JOptionPane;
-import net.jeremybrooks.tagerator.helpers.BrowserLauncher;
-import net.jeremybrooks.tagerator.helpers.FlickrHelper;
-import net.jeremybrooks.tagerator.workers.TagCollectorWorker;
-import net.whirljack.common.util.IOUtil;
-import net.whirljack.common.util.NetUtil;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import processing.core.PFont;
 
 
 /**
@@ -578,8 +579,8 @@ public class MainWindow extends javax.swing.JFrame {
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
 
 	try {
-	    BrowserLauncher.openURL("http://jeremybrooks.net/tagerator/");
-	} catch (IOException e) {
+        Desktop.getDesktop().browse(new URI("https://jeremybrooks.net/tagerator/"));
+	} catch (URISyntaxException | IOException e) {
 	    logger.error("Could not open web browser.", e);
 	    JOptionPane.showMessageDialog(this, "Could not open the web browser.\n" +
 		    "Error message was:\n" +

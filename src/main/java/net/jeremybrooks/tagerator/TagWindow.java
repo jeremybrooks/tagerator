@@ -17,8 +17,7 @@
  */
 package net.jeremybrooks.tagerator;
 
-import java.io.FileReader;
-import net.whirljack.common.util.IOUtil;
+import java.nio.file.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,20 +33,11 @@ public class TagWindow extends javax.swing.JFrame {
     public TagWindow() {
         initComponents();
 
-	FileReader in = null;
-	char[] buf = new char[1024];
-	int pos = 0;
 	try {
-	    in = new FileReader(Main.tagCloudFile);
-	    while ((in.read(buf)) != -1) {
-		this.txtTags.append(new String(buf));
-	    }
-	    
+        this.txtTags.setText(Files.readString(Main.tagCloudFile));
 	    this.txtTags.setCaretPosition(0);
 	} catch (Exception e) {
 	    logger.error("Could not show tags.", e);
-	} finally {
-	    IOUtil.close(in);
 	}
     }
 

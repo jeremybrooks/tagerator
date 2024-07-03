@@ -18,25 +18,25 @@
  */
 package net.jeremybrooks.tagerator;
 
+import net.jeremybrooks.tagerator.helpers.FlickrHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.decorator.AlternateRowHighlighter;
+import org.jdesktop.swingx.decorator.HighlighterPipeline;
+
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.table.AbstractTableModel;
+import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.table.AbstractTableModel;
-import net.jeremybrooks.tagerator.helpers.BrowserLauncher;
-import net.jeremybrooks.tagerator.helpers.FlickrHelper;
-
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.decorator.AlternateRowHighlighter;
-import org.jdesktop.swingx.decorator.HighlighterPipeline;
+import java.net.URI;
 
 
 /**
@@ -160,12 +160,12 @@ public class ResultsWindow {
      */
     private void doSearch(String tag) {
 	StringBuilder sb = new StringBuilder();
-	sb.append("http://www.flickr.com/search/?q=").append(tag);
+	sb.append("https://www.flickr.com/search/?q=").append(tag);
 	sb.append("&w=").append(FlickrHelper.getInstance().getNSID());
 	sb.append("&m=tags");
 
 	try {
-	    BrowserLauncher.openURL(sb.toString());
+		Desktop.getDesktop().browse(new URI(sb.toString()));
 	} catch (Exception e) {
 	    logger.error("Could not open browser.", e);
 	    JOptionPane.showMessageDialog(frame,

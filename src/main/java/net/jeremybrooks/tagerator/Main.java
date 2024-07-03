@@ -20,6 +20,7 @@ package net.jeremybrooks.tagerator;
 
 import net.jeremybrooks.common.PropertyStore;
 import net.jeremybrooks.common.util.NetUtil;
+import net.jeremybrooks.tagerator.helpers.FlickrHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +28,9 @@ import javax.swing.JOptionPane;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 
@@ -38,9 +42,9 @@ public class Main {
 
     public static File configDir;
 
-    public static File tagCloudFile;
+    public static Path tagCloudFile;
 
-    private static Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
 
 
     private static PropertyStore props = null;
@@ -70,14 +74,14 @@ public class Main {
             Main.VERSION = "0.0.0";
         }
 
-        // SET CONFIG DIR BASED ON USER HOME
-        Main.configDir = new File(System.getProperty("user.home"), ".tagerator");
-        if (!Main.configDir.exists()) {
-            Main.configDir.mkdirs();
-        }
-        tagCloudFile = new File(configDir, "tagcloud.txt");
-
         try {
+            // SET CONFIG DIR BASED ON USER HOME
+            Path configDir = Paths.get(System.getProperty("user.home"), ".tagerator");
+            if (!Files.exists(configDir)) {
+                Files.createDirectories(configDir);
+            }
+            tagCloudFile = Paths.get(configDir.toString(), "tagcloud.txt");
+
             props = new PropertyStore(Main.configDir, "tagerator.properties");
             logger.info("Tagerator version " + Main.VERSION + " starting.");
             // Ask about automatic updates
@@ -103,7 +107,8 @@ public class Main {
             }
 
 
-//            Jinx.getInstance().init(FLICKR_KEY, FLICKR_SECRET);
+            // set up Jinx
+            FlickrHelper.getInstance();
 
             // create a default color config file if needed
             createColorSchemeFile();
@@ -127,7 +132,8 @@ public class Main {
                 (new Thread(new VersionChecker(), "VersionCheckerThread")).start();
             }
 
-        } catch (Throwable t) {
+        } catch (
+                Throwable t) {
             System.out.println("A fatal error has occurred.");
             t.printStackTrace();
             logger.fatal("A fatal error has occurred.");
@@ -140,6 +146,7 @@ public class Main {
                     JOptionPane.ERROR_MESSAGE);
             System.exit(2);
         }
+
     }
 
 
@@ -149,11 +156,9 @@ public class Main {
 
 
     private static void createColorSchemeFile() {
-        BufferedWriter out = null;
-        try {
-            File f = new File(configDir, TConstants.COLOR_SCHEME_FILENAME);
+        File f = new File(configDir, TConstants.COLOR_SCHEME_FILENAME);
+        try (BufferedWriter out = new BufferedWriter(new FileWriter(f))) {
             if (!f.exists()) {
-                out = new BufferedWriter(new FileWriter(f));
                 out.write("# Colors for tag cloud generation");
                 out.newLine();
                 out.write("#");
@@ -282,8 +287,6 @@ public class Main {
             }
         } catch (Exception e) {
             logger.warn("Could not create color scheme file.", e);
-        } finally {
-            IOUtil.close(out);
         }
     }
 

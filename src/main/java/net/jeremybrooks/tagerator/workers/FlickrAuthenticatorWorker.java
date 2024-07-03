@@ -18,12 +18,12 @@
  */
 package net.jeremybrooks.tagerator.workers;
 
+import java.awt.Desktop;
 import java.net.URL;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import net.jeremybrooks.tagerator.BlockerPanel;
-import net.jeremybrooks.tagerator.helpers.BrowserLauncher;
 import net.jeremybrooks.tagerator.helpers.FlickrHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -78,9 +78,7 @@ public class FlickrAuthenticatorWorker extends SwingWorker<Void, Void> {
 	blocker.block("Getting authentication URL...");
 	try {
 	    URL url = FlickrHelper.getInstance().getAuthenticationURL();
-
-	    BrowserLauncher.openURL(url.toString());
-
+		Desktop.getDesktop().browse(url.toURI());
 	    blocker.updateMessage("Waiting for authentication...");
 	    
 	    JOptionPane.showMessageDialog(this.parent,

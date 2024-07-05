@@ -18,62 +18,55 @@
  */
 package net.jeremybrooks.tagerator;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
-import net.whirljack.common.util.IOUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.BufferedReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Load the tag cache on a background thread, displaying the results window
  * with the tags, count, and the date the tag cache file was saved.
- * 
+ *
  * @author jeremyb
  */
 public class TagCacheLoader implements Runnable {
 
-    Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
 
     public void run() {
-	File f = new File(Main.configDir, TConstants.TAG_CACHE_FILENAME);
-	if (f.exists()) {
-	    List<TagCount> list = new ArrayList<TagCount>();
-	    BufferedReader in = null;
+        try (BufferedReader in = Files.newBufferedReader(
+                Paths.get(Main.configDir.toString(), TConstants.TAG_CACHE_FILENAME))) {
 
-	    try {
-		in = new BufferedReader(new FileReader(f));
-		String line = null;
-		while ((line = in.readLine()) != null) {
-		    int delim = line.lastIndexOf(",");
-		    if (delim != -1) {
-			String tag = line.substring(0, delim);
-			int count = Integer.parseInt(line.substring(delim + 1).trim());
+            List<TagCount> list = new ArrayList<>();
 
-			TagCount tc = new TagCount();
-			tc.setCount(count);
-			tc.setTag(tag);
-			list.add(tc);
-		    }
-		}
+            String line;
+            while ((line = in.readLine()) != null) {
+                int delim = line.lastIndexOf(",");
+                if (delim != -1) {
+                    String tag = line.substring(0, delim);
+                    int count = Integer.parseInt(line.substring(delim + 1).trim());
 
-		// show the window
-		ResultsWindow rsWin = new ResultsWindow(list.toArray(new TagCount[list.size()]), 100, 100);
-		rsWin.setTitle(Main.getPropertyStore().getProperty(TConstants.LAST_DATE));
-		MainWindow.setTotal(list.size());
+                    TagCount tc = new TagCount();
+                    tc.setCount(count);
+                    tc.setTag(tag);
+                    list.add(tc);
+                }
+            }
 
-		MainWindow.getMainWindow().enableTagCloud();
+            // show the window
+            ResultsWindow rsWin = new ResultsWindow(list.toArray(new TagCount[0]), 100, 100);
+            rsWin.setTitle(Main.getPropertyStore().getProperty(TConstants.LAST_DATE));
+            MainWindow.setTotal(list.size());
 
-	    } catch (Exception e) {
-		logger.error("Something went wrong while reading the tag cache file.", e);
-	    } finally {
-		IOUtil.close(in);
-	    }
-	} else {
-	    logger.debug("No tag cache file found.");
-	}
+            MainWindow.getMainWindow().enableTagCloud();
+
+        } catch (Exception e) {
+            logger.error("Could not read tag cache file.", e);
+        }
     }
 
 }

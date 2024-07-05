@@ -21,9 +21,6 @@ package net.jeremybrooks.tagerator;
 import net.jeremybrooks.tagerator.helpers.FlickrHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.decorator.AlternateRowHighlighter;
-import org.jdesktop.swingx.decorator.HighlighterPipeline;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;

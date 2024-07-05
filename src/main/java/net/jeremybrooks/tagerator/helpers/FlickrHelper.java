@@ -23,6 +23,7 @@ import com.github.scribejava.core.model.OAuth1RequestToken;
 import net.jeremybrooks.jinx.Jinx;
 import net.jeremybrooks.jinx.JinxConstants;
 import net.jeremybrooks.jinx.OAuthAccessToken;
+import net.jeremybrooks.jinx.api.PhotosApi;
 import net.jeremybrooks.tagerator.Main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -164,6 +165,15 @@ public class FlickrHelper {
         try (OutputStream out = new FileOutputStream(oauthTokenFile)) {
             this.oAuthAccessToken.store(out);
         }
+    }
+
+
+    /**
+     * Get an instance of the PhotosApi class that works with the currently authorized user.
+     * @return new instance of the photosApi class.
+     */
+    public PhotosApi getPhotosApi() {
+        return new PhotosApi(jinx);
     }
 
 

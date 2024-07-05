@@ -20,18 +20,26 @@ package net.jeremybrooks.tagerator.workers;
 
 import net.jeremybrooks.jinx.JinxConstants;
 import net.jeremybrooks.jinx.api.PhotosApi;
-import net.jeremybrooks.jinx.dto.Photo;
-import net.jeremybrooks.jinx.dto.Photos;
+import net.jeremybrooks.jinx.response.photos.Photo;
+import net.jeremybrooks.jinx.response.photos.Photos;
 import net.jeremybrooks.jinx.response.photos.SearchParameters;
-import net.jeremybrooks.tagerator.*;
+import net.jeremybrooks.tagerator.BlockerPanel;
+import net.jeremybrooks.tagerator.Main;
+import net.jeremybrooks.tagerator.MainWindow;
+import net.jeremybrooks.tagerator.ResultsWindow;
+import net.jeremybrooks.tagerator.TConstants;
+import net.jeremybrooks.tagerator.TagCount;
 import net.jeremybrooks.tagerator.helpers.FlickrHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -49,19 +57,19 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
     /**
      * Logging.
      */
-    private Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger();
 
     /**
      * The blocker instance.
      */
-    private BlockerPanel blocker;
+    private final BlockerPanel blocker;
 
     /**
      * The parent dialog.
      */
-    private JFrame parent;
+    private final JFrame parent;
 
-    private Map<String, TagCount> map;
+    private final Map<String, TagCount> map;
 
     /**
      * Create a new instance of TagCollectorWorker.
@@ -85,15 +93,16 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
     @Override
     protected Void doInBackground() {
         blocker.block("Getting tags from photos (page 1/?) ...");
-        try (BufferedWriter out = new BufferedWriter(new FileWriter(Main.tagCloudFile))) {
+        try (BufferedWriter out = Files.newBufferedWriter(Main.tagCloudFile)) {
             SearchParameters search = new SearchParameters();
             search.setUserId(FlickrHelper.getInstance().getNSID());
             search.setExtras(Set.of(JinxConstants.PhotoExtras.tags));
             search.setPerPage(500);
 
-            Photos p = PhotosApi.getInstance().search(search);
-            while (p.getPhotos().size() > 0) {
-                this.compileTags(p);
+            PhotosApi photosApi = FlickrHelper.getInstance().getPhotosApi();
+            Photos p = photosApi.search(search);
+            while (p.getPhotoList().size() > 0) {
+                this.compileTags(p, out);
                 out.newLine();
                 out.flush();
                 // uncomment these lines for a short run during dev cycles
@@ -104,9 +113,9 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
                 blocker.updateMessage("Getting tags from photos (page " + search.getPage()
                         + "/" + (p.getPages() + 1) + ") ...");
 
-                p = PhotosApi.getInstance().search(search);
+                p = photosApi.search(search);
             }
-            logger.info("got " + p.getPhotos().size() + " photos.");
+            logger.info("got " + p.getPhotoList().size() + " photos.");
             logger.debug(p);
 
         } catch (Exception e) {
@@ -145,10 +154,11 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
      * Keep a running total of the tag counts.
      * This could probably be more efficient.
      *
-     * @param p
+     * @param p   photo list to process.
+     * @param out the buffered writer instance used to write tags to file.
      */
-    private void compileTags(Photos p) {
-        for (Photo photo : p.getPhotos()) {
+    private void compileTags(Photos p, BufferedWriter out) {
+        for (Photo photo : p.getPhotoList()) {
             for (String tag : photo.getTags().split(" ")) {
                 try {
                     // write the tag to file
@@ -157,11 +167,10 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
                 } catch (Exception e) {
                     logger.error("Unable to write to file.", e);
                 }
-                TagCount data = null;
+                TagCount data;
                 if (this.map.containsKey(tag)) {
                     data = this.map.get(tag);
                     data.setCount(data.getCount() + 1);
-
                 } else {
                     data = new TagCount();
                     data.setTag(tag);

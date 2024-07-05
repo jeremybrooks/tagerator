@@ -18,15 +18,16 @@
  */
 package net.jeremybrooks.tagerator.workers;
 
-import java.awt.Desktop;
-import java.net.URL;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
 import net.jeremybrooks.tagerator.BlockerPanel;
 import net.jeremybrooks.tagerator.helpers.FlickrHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
+import java.awt.Desktop;
+import java.net.URL;
 
 
 /**
@@ -37,30 +38,35 @@ import org.apache.logging.log4j.Logger;
  * BlockerPanel class is used to prevent the user from accessing the GUI during
  * the operation, and to provide the user with feedback.</p>
  *
- *
  * @author jeremyb
  */
 public class FlickrAuthenticatorWorker extends SwingWorker<Void, Void> {
 
-    /** Logging. */
-    private Logger logger = LogManager.getLogger();
+    /**
+     * Logging.
+     */
+    private static final Logger logger = LogManager.getLogger();
 
-    /** The blocker instance. */
-    private BlockerPanel blocker;
+    /**
+     * The blocker instance.
+     */
+    private final BlockerPanel blocker;
 
-    /** The parent dialog. */
-    private JDialog parent;
+    /**
+     * The parent dialog.
+     */
+    private final JDialog parent;
 
 
     /**
      * Create a new instance of FlickrAuthenticator.
      *
-     * @param parent the parent dialog.
+     * @param parent  the parent dialog.
      * @param blocker the blocker.
      */
     public FlickrAuthenticatorWorker(JDialog parent, BlockerPanel blocker) {
-	this.parent = parent;
-	this.blocker = blocker;
+        this.parent = parent;
+        this.blocker = blocker;
     }
 
 
@@ -75,34 +81,34 @@ public class FlickrAuthenticatorWorker extends SwingWorker<Void, Void> {
      */
     @Override
     protected Void doInBackground() {
-	blocker.block("Getting authentication URL...");
-	try {
-	    URL url = FlickrHelper.getInstance().getAuthenticationURL();
-		Desktop.getDesktop().browse(url.toURI());
-	    blocker.updateMessage("Waiting for authentication...");
-	    
-	    JOptionPane.showMessageDialog(this.parent,
-		    "Your browser will open the Flickr site.\n" +
-		    "After granting permission to Tagerator, click OK.",
-		    "Waiting For Authentication",
-		    JOptionPane.INFORMATION_MESSAGE);
+        blocker.block("Getting authentication URL...");
+        try {
+            URL url = FlickrHelper.getInstance().getAuthenticationURL();
+            Desktop.getDesktop().browse(url.toURI());
+            blocker.updateMessage("Waiting for authentication...");
 
-	    blocker.updateMessage("Completing authentication...");
-	    
-	    FlickrHelper.getInstance().completeAuthentication();
+            String verificationCode = JOptionPane.showInputDialog(this.parent,
+                    "Your browser will open the Flickr site.\n" +
+                            "After granting permission to Tagerator, enter the verification code and click OK.",
+                            "Waiting For Authorization",
+                    JOptionPane.INFORMATION_MESSAGE);
 
-	    logger.info("Authentication success.");
-	    
-	} catch (Exception e) {
-	    logger.error("Error while attempting to authenticate.", e);
+            blocker.updateMessage("Completing authentication...");
+
+            FlickrHelper.getInstance().completeAuthentication(verificationCode);
+
+            logger.info("Authentication success.");
+
+        } catch (Exception e) {
+            logger.error("Error while attempting to authenticate.", e);
             JOptionPane.showMessageDialog(this.parent,
                     "There was an error while attempting to authenticate.\n" +
-                    "Please check the log file.",
+                            "Please check the log file.",
                     e.getMessage(),
                     JOptionPane.ERROR_MESSAGE);
-	}
+        }
 
-	return null;
+        return null;
     }
 
 
@@ -112,9 +118,9 @@ public class FlickrAuthenticatorWorker extends SwingWorker<Void, Void> {
     @Override
     protected void done() {
 
-	blocker.unBlock();
-	this.parent.dispose();
-	this.parent.setVisible(false);
+        blocker.unBlock();
+        this.parent.dispose();
+        this.parent.setVisible(false);
     }
 
 }

@@ -28,14 +28,14 @@ import net.jeremybrooks.tagerator.Main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 
@@ -58,7 +58,7 @@ public class FlickrHelper {
     private final Jinx jinx;
 
     /* File that holds oauth token info. */
-    private final File oauthTokenFile;
+    private final Path oauthTokenFile;
 
     private OAuthAccessToken oAuthAccessToken = null;
 
@@ -66,7 +66,7 @@ public class FlickrHelper {
 
     /* Private constructor. This class is a Singleton. */
     private FlickrHelper() throws RuntimeException {
-        this.oauthTokenFile = new File(Main.configDir, "jinx_oauth.token");
+        this.oauthTokenFile = Paths.get(Main.configDir.toString(), "jinx_oauth.token");
         Properties secrets = new Properties();
         try {
             secrets.load(FlickrHelper.class.getClassLoader().getResourceAsStream("net/jeremybrooks/tagerator/private.properties"));
@@ -107,10 +107,10 @@ public class FlickrHelper {
     public boolean authorize() {
         boolean success = false;
         // try loading oauth token
-        if (this.oauthTokenFile.exists()) {
-            logger.info("Loading oauth token from " + this.oauthTokenFile.getAbsolutePath());
+        if (Files.exists(oauthTokenFile)) {
+            logger.info("Loading oauth token from {}", this.oauthTokenFile);
             oAuthAccessToken = new OAuthAccessToken();
-            try (InputStream in = new FileInputStream(oauthTokenFile)) {
+            try (InputStream in = Files.newInputStream(oauthTokenFile)) {
                 oAuthAccessToken.load(in);
                 success = true;
             } catch (Exception e) {
@@ -162,7 +162,7 @@ public class FlickrHelper {
      */
     public void completeAuthentication(String verificationCode) throws Exception {
         this.oAuthAccessToken = jinx.getAccessToken(tempToken, verificationCode);
-        try (OutputStream out = new FileOutputStream(oauthTokenFile)) {
+        try (OutputStream out = Files.newOutputStream(oauthTokenFile)) {
             this.oAuthAccessToken.store(out);
         }
     }
@@ -181,10 +181,11 @@ public class FlickrHelper {
      * Delete all stored authorization data.
      */
     public void deauthorize() {
-        if (this.oauthTokenFile.exists()) {
-            if (this.oauthTokenFile.delete()) {
-                logger.info("Oauth token deleted.");
-            } else {
+        if (Files.exists(oauthTokenFile)) {
+            try {
+                Files.delete(oauthTokenFile);
+                logger.info("The oauth token has been deleted.");
+            } catch (Exception e) {
                 logger.warn("Could not delete the oauth token.");
             }
         }

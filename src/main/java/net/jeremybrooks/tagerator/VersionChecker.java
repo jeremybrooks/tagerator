@@ -15,22 +15,18 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with Tagerator.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 package net.jeremybrooks.tagerator;
 
-// JAVA I/O
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 
-// JAVA NETWORKING
-import java.net.URL;
-import java.net.HttpURLConnection;
-
-// LOGGING
-import net.whirljack.common.util.IOUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 
 /**
@@ -40,10 +36,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class VersionChecker implements Runnable {
 
-    /** Logging. */
-    private Logger logger = LogManager.getLogger();
-
-
+    private static final Logger logger = LogManager.getLogger();
 
     /**
      * Run loop for the Runnable.
@@ -54,34 +47,29 @@ public class VersionChecker implements Runnable {
      */
     @Override
     public void run() {
-        HttpURLConnection conn = null;
-        BufferedReader in = null;
-        String latestVersion = null;
-
+        HttpURLConnection conn;
+        String latestVersion;
 
         try {
-            // WAIT A LITTLE BIT TO MAKE SURE THE MAIN WINDOW IS INSTANSIATED
+            // WAIT A LITTLE BIT TO MAKE SURE THE MAIN WINDOW IS READY
             Thread.sleep(2000);
-
-            // GET THE VERSION WEB PAGE
             conn = (HttpURLConnection) new URL(TConstants.VERSION_URL).openConnection();
-            in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            latestVersion = in.readLine();
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
 
-	    
-            if (latestVersion.compareTo(Main.VERSION) > 0) {
-		logger.info("New version is available.");
-		MainWindow.getMainWindow().setUpdateAvailable(true);
-            } else {
-		logger.info("No new version is available.");
-	    }
+                latestVersion = in.readLine();
 
+                if (latestVersion.compareTo(Main.VERSION) > 0) {
+                    logger.info("New version is available.");
+                    MainWindow.getMainWindow().setUpdateAvailable(true);
+                } else {
+                    logger.info("No new version is available.");
+                }
+
+            } finally {
+                conn.disconnect();
+            }
         } catch (Exception e) {
             logger.warn("ERROR WHILE CHECKING FOR A NEW VERSION.", e);
-        } finally {
-            IOUtil.close(in);
-            conn.disconnect();
         }
-
     }
 }

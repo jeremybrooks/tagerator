@@ -17,9 +17,11 @@
  */
 package net.jeremybrooks.tagerator;
 
-import java.nio.file.Files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import javax.swing.GroupLayout;
+import java.nio.file.Files;
 
 /**
  *
@@ -63,15 +65,15 @@ public class TagWindow extends javax.swing.JFrame {
         txtTags.setWrapStyleWord(true);
         jScrollPane1.setViewportView(txtTags);
 
-        org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
+        GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 635, Short.MAX_VALUE)
+            layout.createParallelGroup()
+            .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 635, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(jScrollPane1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
+            layout.createParallelGroup()
+            .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 541, Short.MAX_VALUE)
         );
 
         pack();

@@ -18,10 +18,9 @@
  */
 package net.jeremybrooks.tagerator;
 
-import java.awt.Frame;
 import net.jeremybrooks.tagerator.workers.FlickrAuthenticatorWorker;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import java.awt.Frame;
 
 
 /**
@@ -31,11 +30,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class LoginDialog extends javax.swing.JDialog {
 
-    /** Logging */
-    private Logger logger = LogManager.getLogger();
-
-
-    /** 
+    /**
      * Creates new form LoginDialog.
      *
      * @param parent the parent frame.

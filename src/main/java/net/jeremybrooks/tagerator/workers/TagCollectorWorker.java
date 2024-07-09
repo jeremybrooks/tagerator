@@ -37,9 +37,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -101,7 +101,7 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
 
             PhotosApi photosApi = FlickrHelper.getInstance().getPhotosApi();
             Photos p = photosApi.search(search);
-            while (p.getPhotoList().size() > 0) {
+            while (!p.getPhotoList().isEmpty()) {
                 this.compileTags(p, out);
                 out.newLine();
                 out.flush();
@@ -115,7 +115,7 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
 
                 p = photosApi.search(search);
             }
-            logger.info("got " + p.getPhotoList().size() + " photos.");
+            logger.info("got {} photos.", p.getPhotoList().size());
             logger.debug(p);
 
         } catch (Exception e) {
@@ -178,7 +178,7 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
                 }
                 this.map.put(tag, data);
 
-                logger.info("***** COUNT FOR " + tag + " is " + this.map.get(tag).getCount());
+                logger.info("***** COUNT FOR {} is {}", tag, this.map.get(tag).getCount());
             }
         }
     }
@@ -189,8 +189,8 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
          * Save the tags in a file.
          */
         public void run() {
-            File f = new File(Main.configDir, TConstants.TAG_CACHE_FILENAME);
-            try (BufferedWriter out = new BufferedWriter(new FileWriter(f))) {
+            Path p = Paths.get(Main.configDir.toString(), TConstants.TAG_CACHE_FILENAME);
+            try (BufferedWriter out = Files.newBufferedWriter(p)) {
                 for (TagCount tc : map.values()) {
                     out.write(tc.getTag());
                     out.write(",");

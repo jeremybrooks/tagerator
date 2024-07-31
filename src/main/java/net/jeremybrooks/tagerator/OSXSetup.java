@@ -19,8 +19,6 @@
 package net.jeremybrooks.tagerator;
 
 
-import java.awt.Desktop;
-
 /**
  * Handle Mac-specific events.
  *
@@ -29,12 +27,12 @@ import java.awt.Desktop;
  */
 public class OSXSetup {
 	public OSXSetup() {
-		Desktop.getDesktop().setAboutHandler(ae -> new AboutDialog(MainWindow.getMainWindow()).setVisible(true));
+//		Desktop.getDesktop().setAboutHandler(ae -> new AboutDialog(MainWindow.getMainWindow()).setVisible(true));
 
-		Desktop.getDesktop().setQuitHandler((qe, qr) -> {
-			MainWindow.getMainWindow().confirmAndExit(qr);
-		});
+//		Desktop.getDesktop().setQuitHandler((qe, qr) -> {
+//			MainWindow.getMainWindow().confirmAndExit(qr);
+//		});
 
-		Desktop.getDesktop().setPreferencesHandler(pe -> new SettingsDialog(MainWindow.getMainWindow()).setVisible(true));
+//		Desktop.getDesktop().setPreferencesHandler(pe -> new SettingsDialog(MainWindow.getMainWindow()).setVisible(true));
 	}
 }

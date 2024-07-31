@@ -45,13 +45,13 @@
 
         <!-- library versions -->
         <commons-io.version>2.11.0</commons-io.version>
-        <derby.version>10.16.1.1</derby.version>
-        <jcalendar.version>1.4</jcalendar.version>
+<!--        <derby.version>10.16.1.1</derby.version>-->
+<!--        <jcalendar.version>1.4</jcalendar.version>-->
         <jinx.version>3.0.3</jinx.version>
         <common.version>3.0.2</common.version>
         <junit.version>4.13.2</junit.version>
         <log4j.version>2.20.0</log4j.version>
-        <twitter4j.version>4.0.7</twitter4j.version>
+<!--        <twitter4j.version>4.0.7</twitter4j.version>-->
 
         <!-- plugin versions -->
         <install4j-maven-plugin.version>1.1.2</install4j-maven-plugin.version>
@@ -76,6 +76,16 @@
         </developer>
     </developers>
     <dependencies>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>22.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>22.0.1</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -123,6 +133,7 @@
                     <include>**/*.gif</include>
                     <include>**/*.icns</include>
                     <include>**/*.html</include>
+                    <include>**/*.fxml</include>
                     <include>log4j2.xml</include>
                     <include>LICENSE</include>
                     <include>CHANGELOG</include>

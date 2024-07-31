@@ -18,14 +18,19 @@
  */
 package net.jeremybrooks.tagerator;
 
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.stage.Stage;
 import net.jeremybrooks.common.PropertyStore;
-import net.jeremybrooks.common.util.NetUtil;
 import net.jeremybrooks.tagerator.helpers.FlickrHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.JOptionPane;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -35,13 +40,19 @@ import java.util.Properties;
 /**
  * @author jeremyb
  */
-public class Main {
+public class Main extends Application {
+    public enum TageratorScene {
+        MAIN,
+        AUTH;
+    }
+
     public static String VERSION;
 
     public static Path configDir;
 
     public static Path tagCloudFile;
 
+    private static Stage primaryStage;
     private static final Logger logger = LogManager.getLogger();
 
 
@@ -53,7 +64,14 @@ public class Main {
      *
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String... args) {
+        launch();
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+       Main.primaryStage = primaryStage;
+
         // If running on a Mac, set up the event handler
         if (System.getProperty("mrj.version") != null) {
             new OSXSetup();
@@ -67,7 +85,6 @@ public class Main {
             Properties appProps = new Properties();
             appProps.load(Main.class.getClassLoader().getResourceAsStream("net/jeremybrooks/tagerator/VERSION"));
             Main.VERSION = appProps.getProperty("app.version");
-
         } catch (Exception e) {
             Main.VERSION = "0.0.0";
         }
@@ -92,61 +109,62 @@ public class Main {
                 props.setProperty(TConstants.CHECK_FOR_UPDATES, yesno == JOptionPane.YES_OPTION);
             }
 
-            // Set up proxy
-            if (props.getPropertyAsBoolean(TConstants.USE_PROXY)) {
-                String host = props.getProperty(TConstants.PROXY_HOST);
-                String port = props.getProperty(TConstants.PROXY_PORT);
-                String user = props.getProperty(TConstants.PROXY_USER);
-                String pass = props.getProperty(TConstants.PROXY_PASS);
-
-                logger.info("Using proxy " + host + ":" + port);
-
-                NetUtil.enableProxy(host, port, user, pass.toCharArray());
-            }
-
-
             // set up Jinx
             FlickrHelper.getInstance();
 
+            // TODO is this needed?
             // create a default color config file if needed
             createColorSchemeFile();
-
-            // Finally, show the main window
-            java.awt.EventQueue.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    MainWindow main = new MainWindow();
-                    main.setVisible(true);
-                    main.doAuth();
-
-                    new Thread(new TagCacheLoader()).start();
-                }
-
-            });
 
             // Check for updates
             if (props.getPropertyAsBoolean(TConstants.CHECK_FOR_UPDATES)) {
                 (new Thread(new VersionChecker(), "VersionCheckerThread")).start();
             }
 
-        } catch (
-                Throwable t) {
-            System.out.println("A fatal error has occurred.");
-            t.printStackTrace();
-            logger.fatal("A fatal error has occurred.");
-            JOptionPane.showMessageDialog(null,
+            // If there is a saved token, show the main view
+            // Otherwise, show the authorization view
+            FXMLLoader fxmlLoader;
+            if (FlickrHelper.getInstance().loadOauthToken()) {
+                showScene(TageratorScene.MAIN);
+            } else {
+                showScene(TageratorScene.AUTH);
+            }
+        } catch (Throwable t) {
+            logger.fatal("A fatal error has occurred.", t);
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Unrecoverable Error");
+            alert.setHeaderText(t.getMessage());
+            alert.setContentText(
                     "An unrecoverable error has occurred.\n"
-                            + t.getMessage() + "\n"
                             + "Please send the logs to tagerator@jeremybrooks.net\n\n"
-                            + "This program will now exit.",
-                    "Unrecoverable Error",
-                    JOptionPane.ERROR_MESSAGE);
+                            + "This program will now exit.");
+            alert.showAndWait();
             System.exit(2);
         }
 
     }
 
+    public static void showScene(TageratorScene sceneName) throws IOException {
+        FXMLLoader fxmlLoader;
+        String name = null;
+        String title = null;
+
+        switch (sceneName) {
+            case MAIN:
+                name = "/net/jeremybrooks/tagerator/gui/main-view.fxml";
+                title = String.format("Tagerator - %s", Main.VERSION);
+                break;
+            case AUTH:
+                name = "/net/jeremybrooks/tagerator/gui/authorize-view.fxml";
+                title = "Authorize";
+                break;
+        }
+        fxmlLoader = new FXMLLoader(Main.class.getResource(name));
+        primaryStage.setTitle(title);
+        Scene scene = new Scene(fxmlLoader.load());
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
 
     public static PropertyStore getPropertyStore() {
         return Main.props;
@@ -284,5 +302,4 @@ public class Main {
             logger.warn("Could not create color scheme file.", e);
         }
     }
-
 }

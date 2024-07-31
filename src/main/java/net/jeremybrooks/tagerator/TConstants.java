@@ -28,12 +28,6 @@ public class TConstants {
     private TConstants() {}
 
 
-    public static final String USE_PROXY = "USE_PROXY";
-    public static final String PROXY_HOST = "PROXY_HOST";
-    public static final String PROXY_PORT = "PROXY_PORT";
-    public static final String PROXY_USER = "PROXY_USER";
-    public static final String PROXY_PASS = "PROXY_PASS";
-
     public static final String TOTAL_TAGS = "TOTAL_TAGS";
     public static final String LAST_DATE = "LAST_DATE";
 

@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import java.awt.Desktop;
 import java.awt.Toolkit;
@@ -51,15 +52,15 @@ public class ResultsWindow {
 
     private JFrame frame = null;
 
-    private final JXTable table;
+    private final JTable table;
 
 
     public ResultsWindow(TagCount[] data, int x, int y) {
 	ResultsWindow.data = data;
-	table = new JXTable(new SampleTableModel());
-	HighlighterPipeline highlighters = new HighlighterPipeline();
-	highlighters.addHighlighter(new AlternateRowHighlighter());
-	table.setHighlighters(highlighters);
+	table = new JTable(new SampleTableModel());
+//	HighlighterPipeline highlighters = new HighlighterPipeline();
+//	highlighters.addHighlighter(new AlternateRowHighlighter());
+//	table.setHighlighters(highlighters);
 	frame = new JFrame();
 	frame.getContentPane().add(new JScrollPane(table));
 	frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

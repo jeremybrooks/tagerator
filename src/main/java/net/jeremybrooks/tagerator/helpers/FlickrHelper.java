@@ -74,7 +74,7 @@ public class FlickrHelper {
             throw new RuntimeException("Unable to load secrets from class path.", ioe);
         }
         jinx = new Jinx(secrets.getProperty("FLICKR_KEY"),
-                secrets.getProperty("FLICKR_SECRETS"), JinxConstants.OAuthPermissions.read);
+                secrets.getProperty("FLICKR_SECRET"), JinxConstants.OAuthPermissions.read);
     }
 
 
@@ -104,7 +104,7 @@ public class FlickrHelper {
      *
      * @return true if user is authorized.
      */
-    public boolean authorize() {
+    public boolean loadOauthToken() {
         boolean success = false;
         // try loading oauth token
         if (Files.exists(oauthTokenFile)) {

@@ -1,11 +1,9 @@
 package net.jeremybrooks.tagerator.gui;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import net.jeremybrooks.tagerator.Main;
 import net.jeremybrooks.tagerator.helpers.FlickrHelper;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +25,7 @@ public class AuthorizeView {
     @FXML
     TextField txtCode;
 
-    public void doAuthorize(ActionEvent actionEvent) {
+    public void doAuthorize() {
         URL url = null;
         try {
             url = FlickrHelper.getInstance().getAuthenticationURL();
@@ -53,11 +51,11 @@ public class AuthorizeView {
         }
     }
 
-    public void codeTyped(KeyEvent keyEvent) {
+    public void codeTyped() {
         btnVerify.setDisable(txtCode.getText().isEmpty());
     }
 
-    public void doVerify(ActionEvent actionEvent) {
+    public void doVerify() {
         String code = txtCode.getText();
         try {
             if (code.isEmpty()) {
@@ -65,7 +63,8 @@ public class AuthorizeView {
             }
             FlickrHelper.getInstance().completeAuthentication(code);
             var alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Authorization Successful");
+            alert.setTitle("Authorization Success");
+            alert.setHeaderText(null);
             alert.setContentText("Tagerator is now authorized to access your Flickr photos.");
             alert.showAndWait();
             Main.showScene(Main.TageratorScene.MAIN);

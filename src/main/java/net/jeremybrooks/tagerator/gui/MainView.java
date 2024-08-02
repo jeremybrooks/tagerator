@@ -40,6 +40,13 @@ public class MainView {
                     Main.showScene(Main.TageratorScene.AUTHORIZE);
                 } catch (IOException ioe) {
                     logger.error("There was an error while deleting the oauth token. path={}", oauthToken, ioe);
+                    alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Error");
+                    alert.setHeaderText("Error deleting OAuth token");
+                    alert.setContentText("There was an error while trying to delete the saved token.\n" +
+                            "Error message was\n" + ioe.getMessage() +
+                            "\nSee logs for more detail.");
+                    alert.showAndWait();
                 }
             }
         }

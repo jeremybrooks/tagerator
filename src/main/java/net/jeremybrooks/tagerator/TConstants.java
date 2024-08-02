@@ -28,6 +28,8 @@ public class TConstants {
     private TConstants() {}
 
 
+    public static final String OAUTH_TOKEN_NAME = "tagerator_jinx_oauth.token";
+
     public static final String TOTAL_TAGS = "TOTAL_TAGS";
     public static final String LAST_DATE = "LAST_DATE";
 

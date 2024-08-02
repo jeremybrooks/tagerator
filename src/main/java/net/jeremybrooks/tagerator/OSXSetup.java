@@ -34,5 +34,6 @@ public class OSXSetup {
 //		});
 
 //		Desktop.getDesktop().setPreferencesHandler(pe -> new SettingsDialog(MainWindow.getMainWindow()).setVisible(true));
+
 	}
 }

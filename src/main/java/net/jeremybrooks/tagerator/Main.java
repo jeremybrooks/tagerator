@@ -43,7 +43,7 @@ import java.util.Properties;
 public class Main extends Application {
     public enum TageratorScene {
         MAIN,
-        AUTH;
+        AUTHORIZE;
     }
 
     public static String VERSION;
@@ -127,7 +127,7 @@ public class Main extends Application {
             if (FlickrHelper.getInstance().loadOauthToken()) {
                 showScene(TageratorScene.MAIN);
             } else {
-                showScene(TageratorScene.AUTH);
+                showScene(TageratorScene.AUTHORIZE);
             }
         } catch (Throwable t) {
             logger.fatal("A fatal error has occurred.", t);
@@ -154,7 +154,7 @@ public class Main extends Application {
                 name = "/net/jeremybrooks/tagerator/gui/main-view.fxml";
                 title = String.format("Tagerator - %s", Main.VERSION);
                 break;
-            case AUTH:
+            case AUTHORIZE:
                 name = "/net/jeremybrooks/tagerator/gui/authorize-view.fxml";
                 title = "Authorize";
                 break;

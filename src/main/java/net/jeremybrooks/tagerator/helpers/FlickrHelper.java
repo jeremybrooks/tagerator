@@ -25,6 +25,7 @@ import net.jeremybrooks.jinx.JinxConstants;
 import net.jeremybrooks.jinx.OAuthAccessToken;
 import net.jeremybrooks.jinx.api.PhotosApi;
 import net.jeremybrooks.tagerator.Main;
+import net.jeremybrooks.tagerator.TConstants;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -66,7 +67,7 @@ public class FlickrHelper {
 
     /* Private constructor. This class is a Singleton. */
     private FlickrHelper() throws RuntimeException {
-        this.oauthTokenFile = Paths.get(Main.configDir.toString(), "jinx_oauth.token");
+        this.oauthTokenFile = Paths.get(Main.configDir.toString(), TConstants.OAUTH_TOKEN_NAME);
         Properties secrets = new Properties();
         try {
             secrets.load(FlickrHelper.class.getClassLoader().getResourceAsStream("net/jeremybrooks/tagerator/private.properties"));

@@ -2,6 +2,7 @@ package net.jeremybrooks.tagerator.gui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import net.jeremybrooks.tagerator.Main;
@@ -22,6 +23,12 @@ public class MainView {
 
     @FXML
     public MenuItem mnuDeauthorize;
+    @FXML
+    public Button btnStart;
+
+    public void doStart() {
+             
+    }
 
     public void doDeauthorize() {
         var alert = new Alert(Alert.AlertType.CONFIRMATION);

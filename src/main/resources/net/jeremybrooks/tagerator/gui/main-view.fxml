@@ -8,7 +8,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.jeremybrooks.tagerator.gui.MainView">
    <children>
-      <Button layoutX="532.0" layoutY="360.0" mnemonicParsing="false" text="Button" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.5" />
+      <Button fx:id="btnStart" layoutX="532.0" layoutY="360.0" mnemonicParsing="false" onAction="#doStart" text="Start" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.5" />
       <MenuBar layoutY="1.0" prefHeight="28.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <menus>
           <Menu id="mnuFile" mnemonicParsing="false" text="File">

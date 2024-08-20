@@ -18,7 +18,6 @@
  */
 package net.jeremybrooks.tagerator;
 
-import net.jeremybrooks.tagerator.workers.TagCollectorWorker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -551,8 +550,8 @@ public class MainWindow extends javax.swing.JFrame {
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
         BlockerPanel blocker = new BlockerPanel(this, "Searching");
         setGlassPane(blocker);
-        TagCollectorWorker worker = new TagCollectorWorker(this, blocker);
-        worker.execute();
+//        TagCollectorTask worker = new TagCollectorTask(this, blocker);
+//        worker.execute();
     }//GEN-LAST:event_btnStartActionPerformed
 
 

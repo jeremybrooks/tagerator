@@ -16,26 +16,20 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Tagerator.  If not, see <http://www.gnu.org/licenses/>.
  */
-package net.jeremybrooks.tagerator.workers;
+package net.jeremybrooks.tagerator.tasks;
 
+import javafx.concurrent.Task;
 import net.jeremybrooks.jinx.JinxConstants;
 import net.jeremybrooks.jinx.api.PhotosApi;
 import net.jeremybrooks.jinx.response.photos.Photo;
 import net.jeremybrooks.jinx.response.photos.Photos;
 import net.jeremybrooks.jinx.response.photos.SearchParameters;
-import net.jeremybrooks.tagerator.BlockerPanel;
 import net.jeremybrooks.tagerator.Main;
-import net.jeremybrooks.tagerator.MainWindow;
-import net.jeremybrooks.tagerator.ResultsWindow;
 import net.jeremybrooks.tagerator.TConstants;
-import net.jeremybrooks.tagerator.TagCount;
 import net.jeremybrooks.tagerator.helpers.FlickrHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
 import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +46,7 @@ import java.util.Set;
  *
  * @author jeremyb
  */
-public class TagCollectorWorker extends SwingWorker<Void, Void> {
+public class TagCollectorTask extends Task<Map<String, Integer>> {
 
     /**
      * Logging.
@@ -62,24 +56,16 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
     /**
      * The blocker instance.
      */
-    private final BlockerPanel blocker;
+//    private final BlockerPanel blocker;
 
-    /**
-     * The parent dialog.
-     */
-    private final JFrame parent;
 
-    private final Map<String, TagCount> map;
+    private final Map<String, Integer> map;
 
     /**
      * Create a new instance of TagCollectorWorker.
      *
-     * @param parent  the parent dialog.
-     * @param blocker the blocker.
      */
-    public TagCollectorWorker(JFrame parent, BlockerPanel blocker) {
-        this.parent = parent;
-        this.blocker = blocker;
+    public TagCollectorTask() {
         this.map = new HashMap<>();
     }
 
@@ -91,8 +77,17 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
      * @return this method does not return any data.
      */
     @Override
-    protected Void doInBackground() {
-        blocker.block("Getting tags from photos (page 1/?) ...");
+    protected Map<String, Integer> call() throws Exception {
+        int count = 0;
+        updateMessage("Searching....");
+        boolean debug = false;
+        String debugFlag = System.getenv("tagerator.debug");
+        if (debugFlag != null && debugFlag.equalsIgnoreCase("true")) {
+            debug = true;
+        }
+        logger.info("Debug mode is {}", debug);
+//        blocker.block("Getting tags from photos (page 1/?) ...");
+
         try (BufferedWriter out = Files.newBufferedWriter(Main.tagCloudFile)) {
             SearchParameters search = new SearchParameters();
             search.setUserId(FlickrHelper.getInstance().getNSID());
@@ -101,30 +96,33 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
 
             PhotosApi photosApi = FlickrHelper.getInstance().getPhotosApi();
             Photos p = photosApi.search(search);
-            while (!p.getPhotoList().isEmpty()) {
-                this.compileTags(p, out);
+            int page = 1;
+            while (page <= p.getPages()) {
+                count += p.getPhotoList().size();
+                updateMessage(String.format("Processing page %d/%d - %d/%d photos", page, p.getPages(),
+                        count, p.getTotal()));
+                compileTags(p, out);
                 out.newLine();
                 out.flush();
-                // uncomment these lines for a short run during dev cycles
-//		JOptionPane.showMessageDialog(null, "DEBUG MODE");
-//		if (true) break;
-
-                search.setPage(p.getPage() + 1);
-                blocker.updateMessage("Getting tags from photos (page " + search.getPage()
-                        + "/" + (p.getPages() + 1) + ") ...");
-
-                p = photosApi.search(search);
+                if (debug) {
+                    break;
+                }
+                page++;
+                if (page <= p.getPages()) {
+                    search.setPage(page);
+                    p = photosApi.search(search);
+                }
             }
             logger.info("got {} photos.", p.getPhotoList().size());
             logger.debug(p);
 
         } catch (Exception e) {
             logger.error("Error while getting tags.", e);
-            JOptionPane.showMessageDialog(this.parent,
-                    "There was an error while getting tags.\n"
-                            + "Please check the log file.",
-                    e.getMessage(),
-                    JOptionPane.ERROR_MESSAGE);
+//            JOptionPane.showMessageDialog(this.parent,
+//                    "There was an error while getting tags.\n"
+//                            + "Please check the log file.",
+//                    e.getMessage(),
+//                    JOptionPane.ERROR_MESSAGE);
         }
 
         return null;
@@ -137,16 +135,16 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
     @Override
     protected void done() {
         int size = map.values().size();
-        ResultsWindow results = new ResultsWindow(
-                map.values().toArray(new TagCount[size]),
-                parent.getX() + 100, parent.getY() + 100);
-        MainWindow.setTotal(size);
+//        ResultsWindow results = new ResultsWindow(
+//                map.values().toArray(new TagCount[size]),
+//                parent.getX() + 100, parent.getY() + 100);
+//        MainWindow.setTotal(size);
 
-        results.setTitle(Main.getPropertyStore().getProperty(TConstants.LAST_DATE));
+//        results.setTitle(Main.getPropertyStore().getProperty(TConstants.LAST_DATE));
 
         new Thread(new WriteTagCache()).start();
 
-        blocker.unBlock();
+//        blocker.unBlock();
     }
 
 
@@ -167,21 +165,19 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
                 } catch (Exception e) {
                     logger.error("Unable to write to file.", e);
                 }
-                TagCount data;
                 if (this.map.containsKey(tag)) {
-                    data = this.map.get(tag);
-                    data.setCount(data.getCount() + 1);
+                    int count = map.get(tag);
+                    count++;
+                    map.put(tag, count);
                 } else {
-                    data = new TagCount();
-                    data.setTag(tag);
-                    data.setCount(1);
+                    map.put(tag, 1);
                 }
-                this.map.put(tag, data);
 
-                logger.info("***** COUNT FOR {} is {}", tag, this.map.get(tag).getCount());
+                logger.info("***** COUNT FOR {} is {}", tag, map.get(tag));
             }
         }
     }
+
 
 
     class WriteTagCache implements Runnable {
@@ -191,10 +187,10 @@ public class TagCollectorWorker extends SwingWorker<Void, Void> {
         public void run() {
             Path p = Paths.get(Main.configDir.toString(), TConstants.TAG_CACHE_FILENAME);
             try (BufferedWriter out = Files.newBufferedWriter(p)) {
-                for (TagCount tc : map.values()) {
-                    out.write(tc.getTag());
+                for (String tag : map.keySet()) {
+                    out.write(tag);
                     out.write(",");
-                    out.write(Integer.toString(tc.getCount()));
+                    out.write(Integer.toString(map.get(tag)));
                     out.newLine();
                     out.flush();
                 }

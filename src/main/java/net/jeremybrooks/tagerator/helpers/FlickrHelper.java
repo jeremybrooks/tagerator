@@ -113,6 +113,7 @@ public class FlickrHelper {
             oAuthAccessToken = new OAuthAccessToken();
             try (InputStream in = Files.newInputStream(oauthTokenFile)) {
                 oAuthAccessToken.load(in);
+                jinx.setoAuthAccessToken(oAuthAccessToken);
                 success = true;
             } catch (Exception e) {
                 logger.warn("Unable to load oauth access token from file.", e);
@@ -163,6 +164,7 @@ public class FlickrHelper {
      */
     public void completeAuthentication(String verificationCode) throws Exception {
         this.oAuthAccessToken = jinx.getAccessToken(tempToken, verificationCode);
+        jinx.setoAuthAccessToken(oAuthAccessToken);
         try (OutputStream out = Files.newOutputStream(oauthTokenFile)) {
             this.oAuthAccessToken.store(out);
         }

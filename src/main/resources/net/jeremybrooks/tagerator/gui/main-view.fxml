@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -8,7 +9,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.jeremybrooks.tagerator.gui.MainView">
    <children>
-      <Button fx:id="btnStart" layoutX="532.0" layoutY="360.0" mnemonicParsing="false" onAction="#doStart" text="Start" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.5" />
+      <Button fx:id="btnStart" layoutX="542.0" layoutY="331.0" mnemonicParsing="false" onAction="#doStart" text="Start" AnchorPane.bottomAnchor="43.0" AnchorPane.rightAnchor="14.5" />
       <MenuBar layoutY="1.0" prefHeight="28.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
         <menus>
           <Menu id="mnuFile" mnemonicParsing="false" text="File">
@@ -29,5 +30,6 @@
           </Menu>
         </menus>
       </MenuBar>
+      <Label fx:id="lblStatus" layoutX="14.0" layoutY="378.0" prefHeight="17.0" prefWidth="576.0" text="Click Start to get tags" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
    </children>
 </AnchorPane>

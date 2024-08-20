@@ -4,9 +4,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import net.jeremybrooks.tagerator.Main;
 import net.jeremybrooks.tagerator.TConstants;
+import net.jeremybrooks.tagerator.tasks.TagCollectorTask;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,9 +27,20 @@ public class MainView {
     public MenuItem mnuDeauthorize;
     @FXML
     public Button btnStart;
+    @FXML
+    public Label lblStatus;
 
     public void doStart() {
-             
+        try {
+            TagCollectorTask task = new TagCollectorTask();
+            lblStatus.textProperty().bind(task.messageProperty());
+            btnStart.disableProperty().bind(task.runningProperty());
+            Thread t = new Thread(task);
+            t.setDaemon(true);
+            t.start();
+        } catch (Exception e) {
+            logger.error("Error", e);
+        }
     }
 
     public void doDeauthorize() {

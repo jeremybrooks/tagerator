@@ -34,7 +34,7 @@ public class TConstants {
     public static final String LAST_DATE = "LAST_DATE";
 
     public static final String CHECK_FOR_UPDATES = "CHECK_FOR_UPDATES";
-    public static final String VERSION_URL="http://jeremybrooks.net/tagerator/VERSION";
+    public static final String VERSION_URL="https://jeremybrooks.net/tagerator/VERSION";
 
     public static final String TAG_CACHE_FILENAME = "tagcache.txt";
 

@@ -49,8 +49,9 @@ public class Main extends Application {
     public static String VERSION;
 
     public static Path configDir;
+    public static Path tagCacheFile;
 
-    public static Path tagCloudFile;
+//    public static Path tagCloudFile;
 
     private static Stage primaryStage;
     private static final Logger logger = LogManager.getLogger();
@@ -95,7 +96,7 @@ public class Main extends Application {
             if (!Files.exists(configDir)) {
                 Files.createDirectories(configDir);
             }
-            tagCloudFile = Paths.get(configDir.toString(), "tagcloud.txt");
+            tagCacheFile = Paths.get(configDir.toString(), TConstants.TAG_CACHE_FILENAME);
 
             props = new PropertyStore(configDir.toString(), "tagerator.properties");
             logger.info("Tagerator version " + Main.VERSION + " starting.");

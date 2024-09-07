@@ -36,7 +36,7 @@ public class TagWindow extends javax.swing.JFrame {
         initComponents();
 
 	try {
-        this.txtTags.setText(Files.readString(Main.tagCloudFile));
+//        this.txtTags.setText(Files.readString(Main.tagCloudFile));
 	    this.txtTags.setCaretPosition(0);
 	} catch (Exception e) {
 	    logger.error("Could not show tags.", e);

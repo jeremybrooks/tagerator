@@ -49,6 +49,8 @@
 <!--        <jcalendar.version>1.4</jcalendar.version>-->
         <jinx.version>3.0.3</jinx.version>
         <common.version>3.0.2</common.version>
+        <kumo.version>1.28</kumo.version>
+        <javafx.version>22.0.1</javafx.version>
         <junit.version>4.13.2</junit.version>
         <log4j.version>2.20.0</log4j.version>
 <!--        <twitter4j.version>4.0.7</twitter4j.version>-->
@@ -77,18 +79,28 @@
     </developers>
     <dependencies>
         <dependency>
+            <groupId>com.kennycason</groupId>
+            <artifactId>kumo-core</artifactId>
+            <version>${kumo.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>22.0.1</version>
+            <version>${javafx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>22.0.1</version>
+            <version>${javafx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
             <version>${log4j.version}</version>
         </dependency>
         <dependency>

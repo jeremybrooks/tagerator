@@ -4,18 +4,22 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import net.jeremybrooks.tagerator.Main;
 import net.jeremybrooks.tagerator.TConstants;
 import net.jeremybrooks.tagerator.tasks.TagCollectorTask;
+import net.jeremybrooks.tagerator.tasks.WordFrequencyTask;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.Optional;
 
 public class MainView {
@@ -29,10 +33,105 @@ public class MainView {
     public Button btnStart;
     @FXML
     public Label lblStatus;
+    @FXML
+    public ChoiceBox<String> sourceBox;
+
+    @FXML
+    public void initialize() {
+        sourceBox.getItems().addAll("Cache", "Flickr");
+        if (Files.exists(Main.tagCacheFile)) {
+            sourceBox.getSelectionModel().select(0);
+        } else {
+            sourceBox.getSelectionModel().select(1);
+        }
+    }
 
     public void doStart() {
+        switch (sourceBox.getValue()) {
+            case "Cache" -> doWordFrequency();
+            case "Flickr" -> doTagCollect();
+        }
+    }
+
+    public void doTagCollect() {
         try {
             TagCollectorTask task = new TagCollectorTask();
+
+            task.setOnSucceeded(t -> {
+                lblStatus.textProperty().unbind();
+                btnStart.disableProperty().unbind();
+                try {
+                    saveTagCache(task.getValue());
+                } catch (Exception e) {
+                    logger.error("Could not save tag cache to file.", e);
+                }
+                doWordFrequency();
+            });
+
+            task.setOnFailed(t -> {
+                lblStatus.textProperty().unbind();
+                btnStart.disableProperty().unbind();
+
+                Throwable error = task.getException();
+                lblStatus.setText("Error getting tags from Flickr.");
+                logger.error("Error getting tags from Flickr.",error);
+
+                var alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Error getting tags from Flickr.");
+                alert.setContentText("Error message was:\n%s\nSee logs for more detail."
+                        .formatted(error.getMessage()));
+                alert.showAndWait();
+            });
+
+            lblStatus.textProperty().bind(task.messageProperty());
+            btnStart.disableProperty().bind(task.runningProperty());
+            Thread t = new Thread(task);
+            t.setDaemon(true);
+            t.start();
+        } catch (Exception e) {
+            logger.error("Error", e);
+        }
+    }
+
+    private void saveTagCache(Map<String, Integer> map) throws Exception {
+        Path p = Paths.get(Main.configDir.toString(), TConstants.TAG_CACHE_FILENAME);
+        logger.info("Saving tag cache to file {}", p);
+        try (BufferedWriter out = Files.newBufferedWriter(p)) {
+            for (String tag : map.keySet()) {
+                if (!tag.isBlank()) {
+                    out.write("%s: %s\n".formatted(map.get(tag), tag.replaceAll(":", "-")));
+                }
+            }
+            out.flush();
+        }
+    }
+
+    public void doWordFrequency() {
+        try {
+            WordFrequencyTask task = new WordFrequencyTask();
+
+            task.setOnSucceeded(t -> {
+                lblStatus.textProperty().unbind();
+                btnStart.disableProperty().unbind();
+            });
+
+            task.setOnFailed(t -> {
+                lblStatus.textProperty().unbind();
+                btnStart.disableProperty().unbind();
+
+                Throwable error = task.getException();
+                lblStatus.setText("Error while calculating word frequency.");
+                logger.error("Error while calculating word frequency.", error);
+
+                var alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error");
+                alert.setHeaderText("Error while calculating word frequency.");
+                alert.setContentText("Error message was:\n%s\nSee logs for more detail."
+                        .formatted(error.getMessage()));
+                alert.showAndWait();
+            });
+
             lblStatus.textProperty().bind(task.messageProperty());
             btnStart.disableProperty().bind(task.runningProperty());
             Thread t = new Thread(task);

@@ -796,26 +796,26 @@ public class MainWindow extends javax.swing.JFrame {
      */
     public void enableTagCloud() {
         boolean enable;
-        try {
-            enable = Files.exists(Main.tagCloudFile) &&
-                    Files.size(Main.tagCloudFile) > 0;
-        } catch (IOException ioe) {
-            enable = false;
-        }
+//        try {
+//            enable = Files.exists(Main.tagCloudFile) &&
+//                    Files.size(Main.tagCloudFile) > 0;
+//        } catch (IOException ioe) {
+//            enable = false;
+//        }
 
-        this.cmbFont.setEnabled(enable);
-        this.cmbMaxWeight.setEnabled(enable);
-        this.cmbMinWeight.setEnabled(enable);
-        this.cmbPlacer.setEnabled(enable);
-        this.btnTagCloud.setEnabled(enable);
-        this.cbxIncludeNumbers.setEnabled(enable);
-        this.cbxUppercase.setEnabled(enable);
-        this.txtStopWords.setEnabled(enable);
-        this.cmbX.setEnabled(enable);
-        this.cmbY.setEnabled(enable);
-        this.slideWiggle.setEnabled(enable);
-        this.slideBackground.setEnabled(enable);
-        this.btnShowTags.setVisible(enable);
+//        this.cmbFont.setEnabled(enable);
+//        this.cmbMaxWeight.setEnabled(enable);
+//        this.cmbMinWeight.setEnabled(enable);
+//        this.cmbPlacer.setEnabled(enable);
+//        this.btnTagCloud.setEnabled(enable);
+//        this.cbxIncludeNumbers.setEnabled(enable);
+//        this.cbxUppercase.setEnabled(enable);
+//        this.txtStopWords.setEnabled(enable);
+//        this.cmbX.setEnabled(enable);
+//        this.cmbY.setEnabled(enable);
+//        this.slideWiggle.setEnabled(enable);
+//        this.slideBackground.setEnabled(enable);
+//        this.btnShowTags.setVisible(enable);
     }
 
 

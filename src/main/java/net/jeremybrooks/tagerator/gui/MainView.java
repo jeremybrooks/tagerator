@@ -38,13 +38,20 @@ public class MainView {
 
     @FXML
     public void initialize() {
-        sourceBox.getItems().addAll("Cache", "Flickr");
-        if (Files.exists(Main.tagCacheFile)) {
-            sourceBox.getSelectionModel().select(0);
-        } else {
-            sourceBox.getSelectionModel().select(1);
-        }
+        populateComboBox();
     }
+
+    public void populateComboBox() {
+        sourceBox.getItems().clear();
+        if (Files.exists(Main.tagCacheFile)) {
+            sourceBox.getItems().addAll("Cache", "Flickr");
+        } else {
+            sourceBox.getItems().add("Flickr");
+        }
+        sourceBox.getSelectionModel().select(0);
+    }
+
+    // TODO add an "open" button that is activated when the word cloud has been saved
 
     public void doStart() {
         switch (sourceBox.getValue()) {
@@ -60,6 +67,7 @@ public class MainView {
             task.setOnSucceeded(t -> {
                 lblStatus.textProperty().unbind();
                 btnStart.disableProperty().unbind();
+                sourceBox.disableProperty().unbind();
                 try {
                     saveTagCache(task.getValue());
                 } catch (Exception e) {
@@ -71,6 +79,7 @@ public class MainView {
             task.setOnFailed(t -> {
                 lblStatus.textProperty().unbind();
                 btnStart.disableProperty().unbind();
+                sourceBox.disableProperty().unbind();
 
                 Throwable error = task.getException();
                 lblStatus.setText("Error getting tags from Flickr.");
@@ -86,6 +95,7 @@ public class MainView {
 
             lblStatus.textProperty().bind(task.messageProperty());
             btnStart.disableProperty().bind(task.runningProperty());
+            sourceBox.disableProperty().bind(task.runningProperty());
             Thread t = new Thread(task);
             t.setDaemon(true);
             t.start();
@@ -104,6 +114,7 @@ public class MainView {
                 }
             }
             out.flush();
+            populateComboBox();
         }
     }
 
@@ -114,11 +125,13 @@ public class MainView {
             task.setOnSucceeded(t -> {
                 lblStatus.textProperty().unbind();
                 btnStart.disableProperty().unbind();
+                sourceBox.disableProperty().unbind();
             });
 
             task.setOnFailed(t -> {
                 lblStatus.textProperty().unbind();
                 btnStart.disableProperty().unbind();
+                sourceBox.disableProperty().unbind();
 
                 Throwable error = task.getException();
                 lblStatus.setText("Error while calculating word frequency.");
@@ -134,6 +147,7 @@ public class MainView {
 
             lblStatus.textProperty().bind(task.messageProperty());
             btnStart.disableProperty().bind(task.runningProperty());
+            sourceBox.disableProperty().bind(task.runningProperty());
             Thread t = new Thread(task);
             t.setDaemon(true);
             t.start();

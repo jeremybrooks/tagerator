@@ -24,9 +24,9 @@
     <artifactId>tagerator</artifactId>
     <version>1.0.1-SNAPSHOT</version>
     <name>Tagerator</name>
-		<description>TODO</description>
+		<description>Generate word clouds based on the tags of your Flickr photos.</description>
     <url>https://jeremybrooks.net/tagerator</url>
-    <inceptionYear>TODO</inceptionYear>
+    <inceptionYear>2011</inceptionYear>
     <licenses>
         <license>
             <name>GNU General Public License</name>
@@ -44,16 +44,14 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- library versions -->
-        <commons-io.version>2.11.0</commons-io.version>
-<!--        <derby.version>10.16.1.1</derby.version>-->
-<!--        <jcalendar.version>1.4</jcalendar.version>-->
+        <commons-io.version>2.17.0</commons-io.version>
         <jinx.version>3.0.3</jinx.version>
         <common.version>3.0.2</common.version>
         <kumo.version>1.28</kumo.version>
+        <jsoup.version>1.18.1</jsoup.version>
         <javafx.version>22.0.1</javafx.version>
         <junit.version>4.13.2</junit.version>
         <log4j.version>2.20.0</log4j.version>
-<!--        <twitter4j.version>4.0.7</twitter4j.version>-->
 
         <!-- plugin versions -->
         <install4j-maven-plugin.version>1.1.2</install4j-maven-plugin.version>
@@ -82,6 +80,12 @@
             <groupId>com.kennycason</groupId>
             <artifactId>kumo-core</artifactId>
             <version>${kumo.version}</version>
+        </dependency>
+        <!-- Using a specific version of jsoup to address transitive dependency vulnerability from kumo. -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>

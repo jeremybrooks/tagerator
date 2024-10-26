@@ -1,5 +1,6 @@
 package net.jeremybrooks.tagerator.gui;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -7,6 +8,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
+import javafx.stage.FileChooser;
 import net.jeremybrooks.tagerator.Main;
 import net.jeremybrooks.tagerator.TConstants;
 import net.jeremybrooks.tagerator.tasks.TagCollectorTask;
@@ -15,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,11 +39,28 @@ public class MainView {
     public Label lblStatus;
     @FXML
     public ChoiceBox<String> sourceBox;
+    @FXML
+    public ChoiceBox<String> cbxShape;
+    @FXML
+    public TextField txtFile;
+    @FXML
+    public Button btnBrowse;
+    @FXML
+    public Label lblFileHelp;
 
     @FXML
     public void initialize() {
         populateComboBox();
+        cbxShape.getItems().addAll("Circle", "Square", "Image");
+        cbxShape.getSelectionModel().select(0);
+        btnBrowse.visibleProperty().bind(txtFile.visibleProperty());
+        lblFileHelp.visibleProperty().bind(txtFile.visibleProperty());
+        txtFile.setVisible(false);
+        cbxShape.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            txtFile.setVisible(newValue.equals("Image"));
+        });
     }
+
 
     public void populateComboBox() {
         sourceBox.getItems().clear();
@@ -83,7 +104,7 @@ public class MainView {
 
                 Throwable error = task.getException();
                 lblStatus.setText("Error getting tags from Flickr.");
-                logger.error("Error getting tags from Flickr.",error);
+                logger.error("Error getting tags from Flickr.", error);
 
                 var alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Error");
@@ -182,6 +203,20 @@ public class MainView {
                     alert.showAndWait();
                 }
             }
+        }
+    }
+
+    public void btnBrowseAction(ActionEvent actionEvent) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select Image File");
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter(
+                        "Image Files", "*.png", "*.jpg", "*.gif"));
+
+        File file = fileChooser.showOpenDialog(btnBrowse.getScene().getWindow());
+        if (file != null) {
+            txtFile.setText(file.getAbsolutePath());
         }
     }
 }

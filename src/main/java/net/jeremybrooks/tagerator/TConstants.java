@@ -27,6 +27,9 @@ public class TConstants {
 
     private TConstants() {}
 
+    public enum CloudShape {
+        Circle, Rectangle, Image;
+    }
 
     public static final String OAUTH_TOKEN_NAME = "tagerator_jinx_oauth.token";
 

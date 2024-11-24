@@ -40,24 +40,57 @@ public class MainView {
     @FXML
     public ChoiceBox<String> sourceBox;
     @FXML
-    public ChoiceBox<String> cbxShape;
+    public ChoiceBox<TConstants.CloudShape> cbxShape;
     @FXML
     public TextField txtFile;
     @FXML
     public Button btnBrowse;
     @FXML
     public Label lblFileHelp;
+    @FXML
+    public TextField txtWidth;
+    @FXML
+    public Label lblWidth;
+    @FXML
+    public TextField txtHeight;
+    @FXML
+    public Label lblHeight;
 
     @FXML
     public void initialize() {
         populateComboBox();
-        cbxShape.getItems().addAll("Circle", "Square", "Image");
-        cbxShape.getSelectionModel().select(0);
+        cbxShape.getItems().addAll(TConstants.CloudShape.Circle, TConstants.CloudShape.Rectangle,
+                TConstants.CloudShape.Image);
+        cbxShape.getSelectionModel().select(TConstants.CloudShape.Rectangle);
+        // bind the visibleProperty of components associated with text fields so that
+        // showing and hiding the text fields will also show/hide associated components
         btnBrowse.visibleProperty().bind(txtFile.visibleProperty());
         lblFileHelp.visibleProperty().bind(txtFile.visibleProperty());
         txtFile.setVisible(false);
+        lblHeight.visibleProperty().bind(txtHeight.visibleProperty());
+        lblWidth.visibleProperty().bind(txtWidth.visibleProperty());
+
+        // add a listener to respond to changes in the shape
         cbxShape.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            txtFile.setVisible(newValue.equals("Image"));
+            switch (newValue) {
+                case Circle -> {
+                    txtFile.setVisible(false);
+                    txtHeight.setVisible(false);
+                    lblWidth.setText("Radius:");
+                    txtWidth.setVisible(true);
+                }
+                case Rectangle -> {
+                    txtFile.setVisible(false);
+                    txtHeight.setVisible(true);
+                    lblWidth.setText("Width:");
+                    txtWidth.setVisible(true);
+                }
+                case Image -> {
+                    txtFile.setVisible(true);
+                    txtHeight.setVisible(false);
+                    txtWidth.setVisible(false);
+                }
+            }
         });
     }
 
@@ -142,6 +175,7 @@ public class MainView {
     public void doWordFrequency() {
         try {
             WordFrequencyTask task = new WordFrequencyTask();
+            task.setCloudShape(cbxShape.getValue());
 
             task.setOnSucceeded(t -> {
                 lblStatus.textProperty().unbind();

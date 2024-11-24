@@ -34,16 +34,20 @@
         </menus>
       </MenuBar>
       <Label fx:id="lblStatus" layoutX="14.0" layoutY="378.0" prefHeight="17.0" prefWidth="576.0" text="Click Start to get tags" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
-      <Label layoutX="14.0" layoutY="39.0" text="Load tags from:" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="39.0" />
-      <ChoiceBox fx:id="sourceBox" layoutX="106.0" layoutY="35.0" prefWidth="150.0" AnchorPane.leftAnchor="106.0" AnchorPane.topAnchor="35.0" />
+      <Label layoutX="37.0" layoutY="40.0" text="Load tags from:" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="40.0" />
+      <ChoiceBox fx:id="sourceBox" layoutX="124.0" layoutY="36.0" prefWidth="150.0" AnchorPane.leftAnchor="124.0" AnchorPane.topAnchor="36.0" />
       <Label layoutX="10.0" layoutY="103.0" text="Word Cloud Shape:" AnchorPane.leftAnchor="14.0" />
       <ChoiceBox fx:id="cbxShape" layoutX="124.0" layoutY="99.0" prefWidth="150.0" AnchorPane.leftAnchor="124.0" AnchorPane.topAnchor="99.0" />
-      <TextField fx:id="txtFile" editable="false" focusTraversable="false" layoutX="124.0" layoutY="134.0" mouseTransparent="true" prefHeight="26.0" prefWidth="363.0" promptText="Click &quot;Browse...&quot; to select an image" AnchorPane.rightAnchor="113.0" AnchorPane.topAnchor="134.0" />
-      <Button fx:id="btnBrowse" layoutX="497.0" layoutY="134.0" mnemonicParsing="false" onAction="#btnBrowseAction" text="Browse..." AnchorPane.rightAnchor="14.5" AnchorPane.topAnchor="134.0" />
-      <Label fx:id="lblFileHelp" layoutX="124.0" layoutY="168.0" text="Words will be drawn over all non-transparent pixels." AnchorPane.rightAnchor="197.5" AnchorPane.topAnchor="168.0">
+      <TextField fx:id="txtFile" editable="false" focusTraversable="false" layoutX="124.0" layoutY="134.0" mouseTransparent="true" prefHeight="26.0" prefWidth="363.0" promptText="Click &quot;Browse...&quot; to select an image" AnchorPane.leftAnchor="124.0" AnchorPane.topAnchor="134.0" />
+      <Button fx:id="btnBrowse" layoutX="497.0" layoutY="134.0" mnemonicParsing="false" onAction="#btnBrowseAction" text="Browse..." AnchorPane.leftAnchor="497.0" AnchorPane.topAnchor="134.0" />
+      <Label fx:id="lblFileHelp" layoutX="124.0" layoutY="168.0" text="Words will be drawn over all non-transparent pixels." AnchorPane.leftAnchor="124.0" AnchorPane.topAnchor="168.0">
          <font>
             <Font name="System Italic" size="13.0" />
          </font>
       </Label>
+      <Label fx:id="lblWidth" layoutX="81.0" layoutY="139.0" text="Width:" AnchorPane.leftAnchor="81.0" />
+      <TextField fx:id="txtWidth" layoutX="124.0" layoutY="135.0" prefHeight="26.0" prefWidth="85.0" AnchorPane.leftAnchor="124.0" />
+      <Label fx:id="lblHeight" layoutX="234.0" layoutY="139.0" text="Height:" AnchorPane.leftAnchor="234.0" />
+      <TextField fx:id="txtHeight" layoutX="281.0" layoutY="134.0" prefHeight="26.0" prefWidth="85.0" AnchorPane.leftAnchor="281.0" />
    </children>
 </AnchorPane>

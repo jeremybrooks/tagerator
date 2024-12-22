@@ -38,9 +38,9 @@
       <ChoiceBox fx:id="sourceBox" layoutX="124.0" layoutY="36.0" prefWidth="150.0" AnchorPane.leftAnchor="124.0" AnchorPane.topAnchor="36.0" />
       <Label layoutX="10.0" layoutY="103.0" text="Word Cloud Shape:" AnchorPane.leftAnchor="14.0" />
       <ChoiceBox fx:id="cbxShape" layoutX="124.0" layoutY="99.0" prefWidth="150.0" AnchorPane.leftAnchor="124.0" AnchorPane.topAnchor="99.0" />
-      <TextField fx:id="txtFile" editable="false" focusTraversable="false" layoutX="124.0" layoutY="134.0" mouseTransparent="true" prefHeight="26.0" prefWidth="363.0" promptText="Click &quot;Browse...&quot; to select an image" AnchorPane.leftAnchor="124.0" AnchorPane.topAnchor="134.0" />
-      <Button fx:id="btnBrowse" layoutX="497.0" layoutY="134.0" mnemonicParsing="false" onAction="#btnBrowseAction" text="Browse..." AnchorPane.leftAnchor="497.0" AnchorPane.topAnchor="134.0" />
-      <Label fx:id="lblFileHelp" layoutX="124.0" layoutY="168.0" text="Words will be drawn over all non-transparent pixels." AnchorPane.leftAnchor="124.0" AnchorPane.topAnchor="168.0">
+      <TextField fx:id="txtFile" editable="false" focusTraversable="false" layoutX="124.0" layoutY="174.0" mouseTransparent="true" prefHeight="26.0" prefWidth="363.0" promptText="Click &quot;Browse...&quot; to select an image" AnchorPane.leftAnchor="124.0" AnchorPane.topAnchor="174.0" />
+      <Button fx:id="btnBrowse" layoutX="497.0" layoutY="174.0" mnemonicParsing="false" onAction="#btnBrowseAction" text="Browse..." AnchorPane.leftAnchor="497.0" AnchorPane.topAnchor="174.0" />
+      <Label fx:id="lblFileHelp" layoutX="124.0" layoutY="200.0" text="Words will be drawn over all non-transparent pixels." AnchorPane.leftAnchor="124.0" AnchorPane.topAnchor="200.0">
          <font>
             <Font name="System Italic" size="13.0" />
          </font>

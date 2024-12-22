@@ -12,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import net.jeremybrooks.tagerator.Main;
 import net.jeremybrooks.tagerator.TConstants;
+import net.jeremybrooks.tagerator.WordCloudParameters;
 import net.jeremybrooks.tagerator.tasks.TagCollectorTask;
 import net.jeremybrooks.tagerator.tasks.WordFrequencyTask;
 import org.apache.logging.log4j.LogManager;
@@ -108,13 +109,27 @@ public class MainView {
     // TODO add an "open" button that is activated when the word cloud has been saved
 
     public void doStart() {
-        switch (sourceBox.getValue()) {
-            case "Cache" -> doWordFrequency();
-            case "Flickr" -> doTagCollect();
+        WordCloudParameters parameters = new WordCloudParameters();
+        parameters.setCloudShape(cbxShape.getValue());
+        parameters.setHeight(txtHeight.getText());
+        parameters.setWidth(txtWidth.getText());
+        parameters.setImageFile(txtFile.getText());
+        parameters.validate();
+        if (parameters.getErrorMessage() == null) {
+            switch (sourceBox.getValue()) {
+                case "Cache" -> doWordFrequency(parameters);
+                case "Flickr" -> doTagCollect(parameters);
+            }
+        } else {
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Invalid Parameters");
+            alert.setHeaderText(parameters.getErrorMessage());
+            alert.setContentText("Please check the parameters and try again.");
+            alert.showAndWait();
         }
     }
 
-    public void doTagCollect() {
+    public void doTagCollect(WordCloudParameters parameters) {
         try {
             TagCollectorTask task = new TagCollectorTask();
 
@@ -127,7 +142,7 @@ public class MainView {
                 } catch (Exception e) {
                     logger.error("Could not save tag cache to file.", e);
                 }
-                doWordFrequency();
+                doWordFrequency(parameters);
             });
 
             task.setOnFailed(t -> {
@@ -172,10 +187,9 @@ public class MainView {
         }
     }
 
-    public void doWordFrequency() {
+    public void doWordFrequency(WordCloudParameters parameters) {
         try {
-            WordFrequencyTask task = new WordFrequencyTask();
-            task.setCloudShape(cbxShape.getValue());
+            WordFrequencyTask task = new WordFrequencyTask(parameters);
 
             task.setOnSucceeded(t -> {
                 lblStatus.textProperty().unbind();
